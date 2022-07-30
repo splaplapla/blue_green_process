@@ -1,7 +1,9 @@
 # frozen_string_literal: true
-require 'blue_green_proces/master_process'
-require 'blue_green_proces/child_process'
-require 'blue_green_proces/base_worker'
+
+require "English"
+require "blue_green_process/master_process"
+require "blue_green_process/child_process"
+require "blue_green_process/base_worker"
 
 require_relative "blue_green_process/version"
 
@@ -11,14 +13,14 @@ module BlueGreenProcess
   PROCESS_STATUS_ACTIVE = :active
   PROCESS_STATUS_INACTIVE = :inactive
 
-  PROCESS_COMMAND_DIE  = 'die'
-  PROCESS_COMMAND_BE_ACTIVE = 'be_active'
-  PROCESS_COMMAND_BE_INACTIVE = 'work'
-  PROCESS_COMMAND_WORK = 'be_inactive'
+  PROCESS_COMMAND_DIE = "die"
+  PROCESS_COMMAND_BE_ACTIVE = "be_active"
+  PROCESS_COMMAND_BE_INACTIVE = "work"
+  PROCESS_COMMAND_WORK = "be_inactive"
 
-  PROCESS_RESPONSE = 'ACK'
+  PROCESS_RESPONSE = "ACK"
 
-  def self.fork_process(label: , worker_class: )
+  def self.fork_process(label:, worker_class:)
     child_read, parent_write = IO.pipe
     parent_read, child_write = IO.pipe
     worker_instance = worker_class.new
@@ -31,29 +33,29 @@ module BlueGreenProcess
       loop do
         data = child_read.gets&.strip
         case data
-        when PROCESS_COMMAND_DIE, nil, ''
-          debug_log "#{label}'ll die(#{$$})"
+        when PROCESS_COMMAND_DIE, nil, ""
+          debug_log "#{label}'ll die(#{$PROCESS_ID})"
           break
         when PROCESS_COMMAND_BE_ACTIVE
           process_status = PROCESS_STATUS_ACTIVE
-          debug_log "#{label}'ll be active(#{$$})"
+          debug_log "#{label}'ll be active(#{$PROCESS_ID})"
           child_write.puts PROCESS_RESPONSE
           ::GC.disable
         when PROCESS_COMMAND_BE_INACTIVE
           process_status = PROCESS_STATUS_INACTIVE
-          debug_log "#{label}'ll be inactive(#{$$})"
+          debug_log "#{label}'ll be inactive(#{$PROCESS_ID})"
           child_write.puts PROCESS_RESPONSE
           ::GC.enable
           ::GC.start
         when PROCESS_COMMAND_WORK
-          warn 'Should not be able to run in this status' if process_status == PROCESS_STATUS_INACTIVE
+          warn "Should not be able to run in this status" if process_status == PROCESS_STATUS_INACTIVE
 
-          debug_log "#{label}'ll work(#{$$})"
+          debug_log "#{label}'ll work(#{$PROCESS_ID})"
           worker_instance.work
           child_write.puts PROCESS_RESPONSE
         else
           child_write.puts "NG"
-          debug_log "unknown. from #{label}(#{$$})"
+          debug_log "unknown. from #{label}(#{$PROCESS_ID})"
         end
       end
     end
@@ -64,12 +66,13 @@ module BlueGreenProcess
     ChildProcess.new(pid, label, parent_read, parent_write)
   end
 
-  def self.new(worker_class: , max_work: )
-    BlueOrGreenProcess::MasterProcess.new((worker_class: worker_class, max_work: max_work)
+  def self.new(worker_class:, max_work:)
+    BlueOrGreenProcess::MasterProcess.new(worker_class: worker_class, max_work: max_work)
   end
 
   def self.debug_log(message)
-    return unless ENV['VERBOSE']
+    return unless ENV["VERBOSE"]
+
     puts message
   end
 end
