@@ -1,8 +1,6 @@
 # BlueGreenProcess
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/blue_green_process`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+A library that solves GC bottlenecks with multi-process.
 
 ## Installation
 
@@ -16,7 +14,28 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+process = BlueGreenProcess.new(
+  worker_class: BaseWorker,
+  max_work: 14,
+)
+
+40.times do
+  process.work
+end
+
+sleep(1)
+
+process.shutdown
+loop do
+  result = Process.waitall
+  if result.empty?
+    break
+  else
+    sleep(0.01)
+  end
+end
+```
 
 ## Development
 
