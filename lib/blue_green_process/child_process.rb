@@ -9,29 +9,29 @@ module BlueGreenProcess
       self.label = label
       self.rpipe = rpipe
       self.wpipe = wpipe
-      self.status = PROCESS_STATUS_INACTIVE
+      self.status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
     end
 
     def be_active
-      return self if status == PROCESS_STATUS_ACTIVE
+      return self if status == BlueGreenProcess::PROCESS_STATUS_ACTIVE
 
-      write_and_await_until_read(PROCESS_COMMAND_BE_ACTIVE)
-      self.status = PROCESS_STATUS_ACTIVE
+      write_and_await_until_read(BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE)
+      self.status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
       self
     end
 
     def be_inactive
-      return self if status == PROCESS_STATUS_INACTIVE
+      return self if status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
 
-      write_and_await_until_read(PROCESS_COMMAND_BE_INACTIVE)
-      self.status = PROCESS_STATUS_INACTIVE
+      write_and_await_until_read(BlueGreenProcess::PROCESS_COMMAND_BE_INACTIVE)
+      self.status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
       self
     end
 
     def work
       enforce_to_be_active
 
-      write_and_await_until_read(PROCESS_COMMAND_WORK)
+      write_and_await_until_read(BlueGreenProcess::PROCESS_COMMAND_WORK)
     end
 
     private
@@ -43,7 +43,7 @@ module BlueGreenProcess
 
     def wait_response
       response = read
-      raise "invalid response." unless response == PROCESS_RESPONSE
+      raise "invalid response." unless response == BlueGreenProcess::PROCESS_RESPONSE
     end
 
     def read
@@ -55,7 +55,7 @@ module BlueGreenProcess
     end
 
     def enforce_to_be_active
-      raise "activeじゃないのにrunできないです" if status != PROCESS_STATUS_ACTIVE
+      raise "activeじゃないのにrunできないです" if status != BlueGreenProcess::PROCESS_STATUS_ACTIVE
     end
   end
 end
