@@ -22,7 +22,7 @@ class BlueOrGreenProcess::ParentProcess
 
   def shutdown
     @processes.each do |process|
-      process.wpipe.puts(PROCESS_COMMAND_DIE)
+      process.wpipe.puts(BlueOrGreenProcess::PROCESS_COMMAND_DIE)
     end
   end
 
