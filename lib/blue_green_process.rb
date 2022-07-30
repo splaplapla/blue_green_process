@@ -29,9 +29,9 @@ module BlueGreenProcess
       process_status = :inactive
 
       loop do
-        data = child_read.gets.strip
+        data = child_read.gets&.strip
         case data
-        when PROCESS_COMMAND_DIE
+        when PROCESS_COMMAND_DIE, nil, ''
           debug_log "#{label}'ll die(#{$$})"
           break
         when PROCESS_COMMAND_BE_ACTIVE
@@ -46,6 +46,8 @@ module BlueGreenProcess
           ::GC.enable
           ::GC.start
         when PROCESS_COMMAND_WORK
+          warn 'Should not be able to run in this status' if process_status == PROCESS_STATUS_INACTIVE
+
           debug_log "#{label}'ll work(#{$$})"
           worker_instance.work
           child_write.puts PROCESS_RESPONSE
