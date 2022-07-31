@@ -2,9 +2,9 @@
 
 module BlueGreenProcess
   class MasterProcess
-    def initialize(worker_class:, max_work:)
-      blue = fork_process(label: :blue, worker_class: worker_class)
-      green = fork_process(label: :green, worker_class: worker_class)
+    def initialize(worker_instance:, max_work:)
+      blue = fork_process(label: :blue, worker_instance: worker_instance)
+      green = fork_process(label: :green, worker_instance: worker_instance)
 
       @stage_state = true
       @stage = {
@@ -16,10 +16,9 @@ module BlueGreenProcess
     end
 
 
-    def fork_process(label:, worker_class:)
+    def fork_process(label:, worker_instance:)
       child_read, parent_write = IO.pipe
       parent_read, child_write = IO.pipe
-      worker_instance = worker_class.new
 
       pid = fork do
         parent_write.close
@@ -47,7 +46,7 @@ module BlueGreenProcess
             warn "Should not be able to run in this status" if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
 
             BlueGreenProcess.debug_log "#{label}'ll work(#{$PROCESS_ID})"
-            worker_instance.work
+            worker_instance.work(label)
             child_write.puts BlueGreenProcess::PROCESS_RESPONSE
           else
             child_write.puts "NG"

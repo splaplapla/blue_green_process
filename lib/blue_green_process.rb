@@ -2,6 +2,9 @@
 
 require "English"
 require_relative "blue_green_process/version"
+require "blue_green_process/master_process"
+require "blue_green_process/child_process"
+require "blue_green_process/base_worker"
 
 module BlueGreenProcess
   PROCESS_STATUS_ACTIVE = :active
@@ -14,12 +17,8 @@ module BlueGreenProcess
 
   PROCESS_RESPONSE = "ACK"
 
-  def self.new(worker_class:, max_work: )
-    BlueGreenProcess::MasterProcess.new(worker_class: worker_class, max_work: max_work)
-  end
-
-  def self.fork_process(label: , worker_class: )
-    BlueGreenProcess::MasterProcess.new(label: label, worker_class: worker_class)
+  def self.new(worker_instance:, max_work: )
+    BlueGreenProcess::MasterProcess.new(worker_instance: worker_instance, max_work: max_work)
   end
 
   def self.debug_log(message)
@@ -28,7 +27,3 @@ module BlueGreenProcess
     puts message
   end
 end
-
-require "blue_green_process/master_process"
-require "blue_green_process/child_process"
-require "blue_green_process/base_worker"

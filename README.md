@@ -16,7 +16,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ```ruby
 process = BlueGreenProcess.new(
-  worker_class: BlueGreenProcess::BaseWorker,
+  worker_instance: BlueGreenProcess::BaseWorker.new,
   max_work: 14,
 )
 
