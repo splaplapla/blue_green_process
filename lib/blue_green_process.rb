@@ -3,7 +3,7 @@
 require "English"
 require_relative "blue_green_process/version"
 require "blue_green_process/master_process"
-require "blue_green_process/child_process"
+require "blue_green_process/worker_process"
 require "blue_green_process/base_worker"
 
 module BlueGreenProcess

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module BlueGreenProcess
-  class ChildProcess
+  class WorkerProcess
     attr_accessor :pid, :label, :rpipe, :wpipe, :status
 
     def initialize(pid, label, rpipe, wpipe)

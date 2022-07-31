@@ -14,7 +14,7 @@ RSpec.describe BlueGreenProcess do
 
         def work(label)
           @file.write label
-          puts "value: #{label}, size: #{@file.size}, path: #{@file.path}"
+          # puts "value: #{label}, size: #{@file.size}, path: #{@file.path}"
         end
       end
     end

@@ -58,7 +58,7 @@ module BlueGreenProcess
       child_write.close
       child_read.close
 
-      BlueGreenProcess::ChildProcess.new(pid, label, parent_read, parent_write)
+      BlueGreenProcess::WorkerProcess.new(pid, label, parent_read, parent_write)
     end
 
     def work
