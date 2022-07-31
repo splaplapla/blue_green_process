@@ -5,12 +5,12 @@ RSpec.describe BlueGreenProcess do
     expect(BlueGreenProcess::VERSION).not_to be nil
   end
 
-  describe '.configure' do
+  describe ".configure" do
     it do
       object = double(:object)
       expect(object).to receive(:run)
       described_class.configure do |config|
-        config.after_fork = ->{ object.run }
+        config.after_fork = -> { object.run }
       end
 
       described_class.config.after_fork.call
@@ -34,7 +34,7 @@ RSpec.describe BlueGreenProcess do
     let(:file) { Tempfile.new }
     let(:worker_instance) { worker_class.new(file) }
 
-    context 'no after_fork' do
+    context "no after_fork" do
       it "workerからファイルへ書き込みをすること" do
         process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
 
@@ -52,7 +52,7 @@ RSpec.describe BlueGreenProcess do
       end
     end
 
-    context 'has after_fork' do
+    context "has after_fork" do
       it "workerからファイルへ書き込みをすること" do
         BlueGreenProcess.configure do |config|
           config.after_fork = -> { puts "hello fork!!!!!!!" }
