@@ -17,7 +17,7 @@ module BlueGreenProcess
 
   PROCESS_RESPONSE = "ACK"
 
-  def self.new(worker_instance:, max_work: )
+  def self.new(worker_instance:, max_work:)
     BlueGreenProcess::MasterProcess.new(worker_instance: worker_instance, max_work: max_work)
   end
 

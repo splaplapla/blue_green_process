@@ -5,7 +5,7 @@ RSpec.describe BlueGreenProcess do
     expect(BlueGreenProcess::VERSION).not_to be nil
   end
 
-  describe 'integration' do
+  describe "integration" do
     let(:worker_class) do
       Class.new(BlueGreenProcess::BaseWorker) do
         def initialize(file)
@@ -22,7 +22,7 @@ RSpec.describe BlueGreenProcess do
     let(:file) { Tempfile.new }
     let(:worker_instance) { worker_class.new(file) }
 
-    it 'workerからファイルへ書き込みをすること' do
+    it "workerからファイルへ書き込みをすること" do
       process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
 
       process.work # blue
@@ -32,10 +32,9 @@ RSpec.describe BlueGreenProcess do
       file.rewind
       result = file.read
       expect(result).to eq(
-        [ 'blue'   * 2,
-          'greena'*  2,
-          'blue'   * 2,
-        ].join
+        ["blue" * 2,
+         "green" * 2,
+         "blue"  * 2].join
       )
     end
   end

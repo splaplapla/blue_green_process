@@ -15,7 +15,6 @@ module BlueGreenProcess
       @max_work = max_work
     end
 
-
     def fork_process(label:, worker_instance:)
       child_read, parent_write = IO.pipe
       parent_read, child_write = IO.pipe
@@ -43,7 +42,9 @@ module BlueGreenProcess
             ::GC.enable
             ::GC.start
           when BlueGreenProcess::PROCESS_COMMAND_WORK
-            warn "Should not be able to run in this status" if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
+            if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
+              warn "Should not be able to run in this status"
+            end
 
             BlueGreenProcess.debug_log "#{label}'ll work(#{$PROCESS_ID})"
             worker_instance.work(label)
