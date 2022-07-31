@@ -24,7 +24,7 @@ RSpec.describe BlueGreenProcess do
 
     it "workerからファイルへ書き込みをすること" do
       BlueGreenProcess.configure do |config|
-        config.after_fork = ->{ puts 'hello fork!!!!!!!' }
+        config.after_fork = -> { puts "hello fork!!!!!!!" }
       end
 
       process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)

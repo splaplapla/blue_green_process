@@ -28,7 +28,7 @@ module BlueGreenProcess
     puts message
   end
 
-  def self.configure(&block)
+  def self.configure
     @config = Config.new
     yield(@config)
     true
