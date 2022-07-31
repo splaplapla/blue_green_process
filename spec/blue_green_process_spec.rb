@@ -34,24 +34,44 @@ RSpec.describe BlueGreenProcess do
     let(:file) { Tempfile.new }
     let(:worker_instance) { worker_class.new(file) }
 
-    it "workerからファイルへ書き込みをすること" do
-      BlueGreenProcess.configure do |config|
-        config.after_fork = -> { puts "hello fork!!!!!!!" }
+    context 'no after_fork' do
+      it "workerからファイルへ書き込みをすること" do
+        process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
+
+        process.work # blue
+        process.work # green
+        process.work # blue
+
+        file.rewind
+        result = file.read
+        expect(result).to eq(
+          ["blue" * 2,
+           "green" * 2,
+           "blue"  * 2].join
+        )
       end
+    end
 
-      process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
+    context 'has after_fork' do
+      it "workerからファイルへ書き込みをすること" do
+        BlueGreenProcess.configure do |config|
+          config.after_fork = -> { puts "hello fork!!!!!!!" }
+        end
 
-      process.work # blue
-      process.work # green
-      process.work # blue
+        process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
 
-      file.rewind
-      result = file.read
-      expect(result).to eq(
-        ["blue" * 2,
-         "green" * 2,
-         "blue"  * 2].join
-      )
+        process.work # blue
+        process.work # green
+        process.work # blue
+
+        file.rewind
+        result = file.read
+        expect(result).to eq(
+          ["blue" * 2,
+           "green" * 2,
+           "blue"  * 2].join
+        )
+      end
     end
   end
 end

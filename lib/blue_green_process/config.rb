@@ -9,5 +9,9 @@ module BlueGreenProcess
     def after_fork
       @after_fork_block || -> {}
     end
+
+    def reset
+      @after_fork_block = nil
+    end
   end
 end
