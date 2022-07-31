@@ -20,6 +20,8 @@ module BlueGreenProcess
       parent_read, child_write = IO.pipe
 
       pid = fork do
+        BlueGreenProcess.config.after_fork.call
+
         parent_write.close
         parent_read.close
         process_status = :inactive

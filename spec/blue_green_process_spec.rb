@@ -23,6 +23,10 @@ RSpec.describe BlueGreenProcess do
     let(:worker_instance) { worker_class.new(file) }
 
     it "workerからファイルへ書き込みをすること" do
+      BlueGreenProcess.configure do |config|
+        config.after_fork = ->{ puts 'hello fork!!!!!!!' }
+      end
+
       process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
 
       process.work # blue

@@ -5,6 +5,7 @@ require_relative "blue_green_process/version"
 require "blue_green_process/master_process"
 require "blue_green_process/worker_process"
 require "blue_green_process/base_worker"
+require "blue_green_process/config"
 
 module BlueGreenProcess
   PROCESS_STATUS_ACTIVE = :active
@@ -25,5 +26,15 @@ module BlueGreenProcess
     return unless ENV["VERBOSE"]
 
     puts message
+  end
+
+  def self.configure(&block)
+    @config = Config.new
+    yield(@config)
+    true
+  end
+
+  def self.config
+    @config ||= Config.new
   end
 end
