@@ -29,7 +29,7 @@ module BlueGreenProcess
           case data
           when BlueGreenProcess::PROCESS_COMMAND_DIE, nil, ""
             BlueGreenProcess.debug_log "#{label}'ll die(#{$PROCESS_ID})"
-            break
+            exit 0
           when BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
             BlueGreenProcess.debug_log "#{label}'ll be active(#{$PROCESS_ID})"
@@ -51,9 +51,12 @@ module BlueGreenProcess
             child_write.puts BlueGreenProcess::PROCESS_RESPONSE
           else
             child_write.puts "NG"
-            BlueGreenProcess.debug_log "unknown. from #{label}(#{$PROCESS_ID})"
+            puts "unknown. from #{label}(#{$PROCESS_ID})"
+            exit 1
           end
         end
+
+        exit 0
       end
 
       child_write.close
