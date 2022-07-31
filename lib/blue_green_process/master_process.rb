@@ -68,6 +68,8 @@ module BlueGreenProcess
           process.work
         end
       end
+
+      true
     end
 
     def shutdown
