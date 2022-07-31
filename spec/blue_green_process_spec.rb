@@ -5,6 +5,18 @@ RSpec.describe BlueGreenProcess do
     expect(BlueGreenProcess::VERSION).not_to be nil
   end
 
+  describe '.configure' do
+    it do
+      object = double(:object)
+      expect(object).to receive(:run)
+      described_class.configure do |config|
+        config.after_fork = ->{ object.run }
+      end
+
+      described_class.config.after_fork.call
+    end
+  end
+
   describe "integration" do
     let(:worker_class) do
       Class.new(BlueGreenProcess::BaseWorker) do
