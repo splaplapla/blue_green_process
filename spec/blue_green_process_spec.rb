@@ -13,19 +13,17 @@ RSpec.describe BlueGreenProcess do
         end
 
         def work(label)
+          # @file.write(label)
           @file.write label
-          # puts "value: #{label}, size: #{@file.size}, path: #{@file.path}"
+          @file.flush
         end
       end
     end
+    let(:file) { Tempfile.new }
+    let(:worker_instance) { worker_class.new(file) }
 
     it 'workerからファイルへ書き込みをすること' do
-      file = Tempfile.new
-      instance = worker_class.new(file)
-      process = BlueGreenProcess.new(
-        worker_instance: instance,
-        max_work: 3,
-      )
+      process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
 
       process.work # blue
       process.work # green
@@ -33,7 +31,12 @@ RSpec.describe BlueGreenProcess do
 
       file.rewind
       result = file.read
-      expect(result).to eq(['blue'*3, 'green'*3, 'blue'*3].join)
+      expect(result).to eq(
+        [ 'blue'   * 2,
+          'greena'*  2,
+          'blue'   * 2,
+        ].join
+      )
     end
   end
 end
