@@ -50,3 +50,14 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## NOTE
+* 前回の処理が終わっていないのにqueuingしない
+* workerの処理内容は固定
+
+## TODO
+* queueしてからのdequeueするまでの時間を測定したい
+    * webサーバでよくあるqueued timeみたいな扱い
+    * これが伸びると致命的なのでチューニングできるようにしたいため
+* inactiveからactiveへの切り替えになる時間を測定したい
+  * GCが長引いてactiveプロセスが処理開始に時間がかかるので
