@@ -16,7 +16,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ```ruby
 BlueGreenProcess.configure do |config|
-    config.after_fork = ->{ puts 'forked!'  }
+  config.after_fork = ->{ puts 'forked!'  }
 end
 
 process = BlueGreenProcess.new(
