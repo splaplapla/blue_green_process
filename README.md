@@ -60,6 +60,7 @@ The gem is available as open source under the terms of the [MIT License](https:/
 * workerの処理内容は固定
 
 ## TODO
+* runしている間にsignalをもらったらすぐにdieを送りたい
 * プロセスを入れ替えるときに変数を受け渡しをする
 * queueしてからのdequeueするまでの時間を測定したい
     * webサーバでよくあるqueued timeみたいな扱い
