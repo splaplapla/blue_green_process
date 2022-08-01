@@ -49,7 +49,7 @@ module BlueGreenProcess
             end
 
             BlueGreenProcess.debug_log "#{label}'ll work(#{$PROCESS_ID})"
-            worker_instance.work(label)
+            worker_instance.work(*label)
             child_write.puts BlueGreenProcess::PROCESS_RESPONSE
           else
             child_write.puts "NG"

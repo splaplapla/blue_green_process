@@ -2,6 +2,6 @@
 
 module BlueGreenProcess
   class BaseWorker
-    def work; end
+    def work(*); end
   end
 end
