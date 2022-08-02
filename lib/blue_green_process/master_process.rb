@@ -41,7 +41,6 @@ module BlueGreenProcess
             process_status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
             BlueGreenProcess.debug_log "#{label}'ll be inactive(#{$PROCESS_ID})"
             child_write.puts BlueGreenProcess::PROCESS_RESPONSE
-            ::GC.enable
             ::GC.start
           when BlueGreenProcess::PROCESS_COMMAND_WORK
             if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
