@@ -47,8 +47,8 @@ module BlueGreenProcess
             if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
               warn "Should not be able to run in this status"
             end
-
-            BlueGreenProcess.debug_log "#{label}'ll work(#{$PROCESS_ID})"
+            # too verbose
+            # BlueGreenProcess.debug_log "#{label}'ll work(#{$PROCESS_ID})"
             worker_instance.work(*label)
             child_write.puts BlueGreenProcess::PROCESS_RESPONSE
           else
