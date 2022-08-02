@@ -23,9 +23,7 @@ module BlueGreenProcess
   end
 
   def self.debug_log(message)
-    return unless ENV["VERBOSE"]
-
-    puts message
+    BlueGreenProcess.config.logger.debug(message)
   end
 
   def self.configure
@@ -36,5 +34,9 @@ module BlueGreenProcess
 
   def self.config
     @config ||= Config.new
+  end
+
+  def self.reset
+    @config = Config.new
   end
 end

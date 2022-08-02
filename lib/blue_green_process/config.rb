@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require "logger"
+
 module BlueGreenProcess
   class Config
+    attr_writer :logger
+
     def after_fork=(block)
       @after_fork_block = block
     end
@@ -10,8 +14,8 @@ module BlueGreenProcess
       @after_fork_block || -> {}
     end
 
-    def reset
-      @after_fork_block = nil
+    def logger
+      @logger ||= Logger.new("/dev/null")
     end
   end
 end

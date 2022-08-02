@@ -5,6 +5,33 @@ RSpec.describe BlueGreenProcess do
     expect(BlueGreenProcess::VERSION).not_to be nil
   end
 
+  describe '.config' do
+    describe '.logger' do
+      context 'loggerをセットしないとき' do
+        it do
+          BlueGreenProcess.config.logger.info "hoge"
+        end
+      end
+
+      context 'loggerをセットしたとき' do
+        let(:file) { Tempfile.new }
+        let(:logger) { Logger.new(file) }
+
+        subject { BlueGreenProcess.config.logger.info "hogehoge" }
+
+        before do
+          BlueGreenProcess.config.logger = logger
+        end
+
+        it do
+          subject
+          file.rewind
+          expect(file.read).to include("hogehoge")
+        end
+      end
+    end
+  end
+
   describe ".configure" do
     it do
       object = double(:object)
