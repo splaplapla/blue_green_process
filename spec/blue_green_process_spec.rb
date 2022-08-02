@@ -5,15 +5,15 @@ RSpec.describe BlueGreenProcess do
     expect(BlueGreenProcess::VERSION).not_to be nil
   end
 
-  describe '.config' do
-    describe '.logger' do
-      context 'loggerをセットしないとき' do
+  describe ".config" do
+    describe ".logger" do
+      context "loggerをセットしないとき" do
         it do
           BlueGreenProcess.config.logger.info "hoge"
         end
       end
 
-      context 'loggerをセットしたとき' do
+      context "loggerをセットしたとき" do
         let(:file) { Tempfile.new }
         let(:logger) { Logger.new(file) }
 
