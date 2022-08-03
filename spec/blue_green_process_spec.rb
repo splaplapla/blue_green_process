@@ -45,6 +45,10 @@ RSpec.describe BlueGreenProcess do
   end
 
   describe "integration" do
+    before do
+      BlueGreenProcess.config.logger = Logger.new($stdout)
+    end
+
     let(:worker_class) do
       Class.new(BlueGreenProcess::BaseWorker) do
         def initialize(file)
@@ -53,6 +57,7 @@ RSpec.describe BlueGreenProcess do
 
         def work(label)
           # @file.write(label)
+          BlueGreenProcess.config.logger.debug "#{label}'ll work(#{$PROCESS_ID})"
           @file.write label
           @file.flush
         end
@@ -68,6 +73,7 @@ RSpec.describe BlueGreenProcess do
         process.work # blue
         process.work # green
         process.work # blue
+        process.shutdown
 
         file.rewind
         result = file.read
@@ -90,6 +96,7 @@ RSpec.describe BlueGreenProcess do
         process.work # blue
         process.work # green
         process.work # blue
+        process.shutdown
 
         file.rewind
         result = file.read
