@@ -16,7 +16,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ```ruby
 BlueGreenProcess.configure do |config|
-  config.after_fork = ->{ puts 'forked!'  }
+  config.after_fork = ->{ puts 'forked!' }
 end
 
 process = BlueGreenProcess.new(
@@ -41,6 +41,23 @@ loop do
 end
 ```
 
+### Metrics
+パフォーマンスの解析に使えます
+
+##### BlueGreenProcess.performance.process_switching_time_before_work
+* 最後に、プロセスを入れ替える時にかかった時間を返す
+
+### Callbacks
+#### after_fork
+
+プロセスをforkした時に実行する
+
+```ruby
+BlueGreenProcess.configure do |config|
+config.after_fork = ->{ puts 'forked!' }
+end
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
@@ -56,8 +73,10 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 ## NOTE
-* 前回の処理が終わっていないのにqueuingしない
-* workerの処理内容は固定
+* 処理は直列で行う
+* processが行う処理内容は引数を含めて固定
+* A processがinactiveになった時に行うGC.startに時間がかかると、次にA processがbe_activeになったらレスポンスが遅れる. 構造上の仕様.
+  * これが起きる場合はオブジェクトの生成を減らすとか、blue, greenではなくプロセスのプールを作ってプロセスがGCに時間を費やせるようにする
 
 ## TODO
 * runしている間にsignalをもらったらすぐにdieを送りたい
