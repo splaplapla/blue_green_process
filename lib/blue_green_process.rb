@@ -22,10 +22,6 @@ module BlueGreenProcess
     BlueGreenProcess::MasterProcess.new(worker_instance: worker_instance, max_work: max_work)
   end
 
-  def self.debug_log(message)
-    BlueGreenProcess.config.logger.debug(message)
-  end
-
   def self.configure
     @config = Config.new
     yield(@config)

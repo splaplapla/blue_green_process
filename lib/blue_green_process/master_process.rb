@@ -30,16 +30,16 @@ module BlueGreenProcess
           data = child_read.gets&.strip
           case data
           when BlueGreenProcess::PROCESS_COMMAND_DIE, nil, ""
-            BlueGreenProcess.debug_log "#{label}'ll die(#{$PROCESS_ID})"
+            BlueGreenProcess.config.logger.debug "#{label}'ll die(#{$PROCESS_ID})"
             exit 0
           when BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
-            BlueGreenProcess.debug_log "#{label}'ll be active(#{$PROCESS_ID})"
+            BlueGreenProcess.config.logger.debug "#{label}'ll be active(#{$PROCESS_ID})"
             child_write.puts BlueGreenProcess::PROCESS_RESPONSE
             ::GC.disable
           when BlueGreenProcess::PROCESS_COMMAND_BE_INACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
-            BlueGreenProcess.debug_log "#{label}'ll be inactive(#{$PROCESS_ID})"
+            BlueGreenProcess.config.logger.debug "#{label}'ll be inactive(#{$PROCESS_ID})"
             child_write.puts BlueGreenProcess::PROCESS_RESPONSE
             ::GC.start
           when BlueGreenProcess::PROCESS_COMMAND_WORK
@@ -47,7 +47,7 @@ module BlueGreenProcess
               warn "Should not be able to run in this status"
             end
             # too verbose
-            # BlueGreenProcess.debug_log "#{label}'ll work(#{$PROCESS_ID})"
+            # BlueGreenProcess.config.logger.debug "#{label}'ll work(#{$PROCESS_ID})"
             worker_instance.work(*label)
             child_write.puts BlueGreenProcess::PROCESS_RESPONSE
           else
