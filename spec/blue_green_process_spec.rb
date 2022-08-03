@@ -51,27 +51,27 @@ RSpec.describe BlueGreenProcess do
     let(:file) { Tempfile.new }
     let(:worker_instance) { worker_class.new(file) }
 
-    context 'work内で例外が起きるとき' do
+    context "work内で例外が起きるとき" do
       let(:worker_class) do
         Class.new(BlueGreenProcess::BaseWorker) do
           def initialize(file)
             @file = file
           end
 
-          def work(label)
+          def work(_label)
             raise RuntimeError
           end
         end
       end
 
-      it 'blue greenなプロセスが停止すること' do
+      it "blue greenなプロセスが停止すること" do
       end
 
-      it '例外がmasterプロセスに伝播すること' do
+      it "例外がmasterプロセスに伝播すること" do
       end
     end
 
-    context '例外が起きないとき' do
+    context "例外が起きないとき" do
       let(:worker_class) do
         Class.new(BlueGreenProcess::BaseWorker) do
           def initialize(file)
