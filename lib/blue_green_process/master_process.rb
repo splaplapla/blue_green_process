@@ -67,13 +67,11 @@ module BlueGreenProcess
     end
 
     def work
-      result = active_process do |process|
+      active_process do |process|
         @max_work.times do
           process.work
         end
       end
-
-      result
     end
 
     def shutdown
