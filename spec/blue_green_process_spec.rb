@@ -48,63 +48,84 @@ RSpec.describe BlueGreenProcess do
     before do
       BlueGreenProcess.config.logger = Logger.new($stdout)
     end
-
-    let(:worker_class) do
-      Class.new(BlueGreenProcess::BaseWorker) do
-        def initialize(file)
-          @file = file
-        end
-
-        def work(label)
-          # @file.write(label)
-          BlueGreenProcess.config.logger.debug "#{label}'ll work(#{$PROCESS_ID})"
-          @file.write label
-          @file.flush
-        end
-      end
-    end
     let(:file) { Tempfile.new }
     let(:worker_instance) { worker_class.new(file) }
 
-    context "no after_fork" do
-      it "workerからファイルへ書き込みをすること" do
-        process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
+    context 'work内で例外が起きるとき' do
+      let(:worker_class) do
+        Class.new(BlueGreenProcess::BaseWorker) do
+          def initialize(file)
+            @file = file
+          end
 
-        process.work # blue
-        process.work # green
-        process.work # blue
-        process.shutdown
+          def work(label)
+            raise RuntimeError
+          end
+        end
+      end
 
-        file.rewind
-        result = file.read
-        expect(result).to eq(
-          ["blue" * 2,
-           "green" * 2,
-           "blue"  * 2].join
-        )
+      it 'blue greenなプロセスが停止すること' do
+      end
+
+      it '例外がmasterプロセスに伝播すること' do
       end
     end
 
-    context "has after_fork" do
-      it "workerからファイルへ書き込みをすること" do
-        BlueGreenProcess.configure do |config|
-          config.after_fork = -> { puts "hello fork!!!!!!!" }
+    context '例外が起きないとき' do
+      let(:worker_class) do
+        Class.new(BlueGreenProcess::BaseWorker) do
+          def initialize(file)
+            @file = file
+          end
+
+          def work(label)
+            BlueGreenProcess.config.logger.debug "#{label}'ll work(#{$PROCESS_ID})"
+            @file.write label
+            @file.flush
+          end
         end
+      end
 
-        process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
+      context "no after_fork" do
+        it "workerからファイルへ書き込みをすること" do
+          process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
 
-        process.work # blue
-        process.work # green
-        process.work # blue
-        process.shutdown
+          process.work # blue
+          process.work # green
+          process.work # blue
+          process.shutdown
 
-        file.rewind
-        result = file.read
-        expect(result).to eq(
-          ["blue" * 2,
-           "green" * 2,
-           "blue"  * 2].join
-        )
+          file.rewind
+          result = file.read
+          expect(result).to eq(
+            ["blue" * 2,
+             "green" * 2,
+             "blue"  * 2].join
+          )
+        end
+      end
+
+      context "has after_fork" do
+        it "workerからファイルへ書き込みをすること" do
+          BlueGreenProcess.configure do |config|
+            config.after_fork = -> { puts "hello fork!!!!!!!" }
+          end
+
+          process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
+
+          process.work # blue
+          process.work # green
+          process.work # blue
+          process.shutdown
+
+          file.rewind
+          result = file.read
+          expect(result).to eq(
+            ["blue" * 2,
+             "green" * 2,
+             "blue"  * 2].join
+          )
+        end
       end
     end
   end
