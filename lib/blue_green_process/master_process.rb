@@ -67,13 +67,13 @@ module BlueGreenProcess
     end
 
     def work
-      active_process do |process|
+      result = active_process do |process|
         @max_work.times do
           process.work
         end
       end
 
-      true
+      result
     end
 
     def shutdown
@@ -83,10 +83,16 @@ module BlueGreenProcess
     private
 
     def active_process
-      active_process = @stage[@stage_state].be_active
+      active_process = nil
+      process_switching_time = Benchmark.realtime do
+        active_process = @stage[@stage_state].be_active
+      end
+      BlueGreenProcess.performance.process_switching_time_before_work = process_switching_time
+
       @stage[!@stage_state].be_inactive
-      yield(active_process)
+      result = yield(active_process)
       @stage_state = !@stage_state
+      result
     end
   end
 end

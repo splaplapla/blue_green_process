@@ -6,6 +6,8 @@ require "blue_green_process/master_process"
 require "blue_green_process/worker_process"
 require "blue_green_process/base_worker"
 require "blue_green_process/config"
+require "blue_green_process/performance"
+require "benchmark"
 
 module BlueGreenProcess
   PROCESS_STATUS_ACTIVE = :active
@@ -32,7 +34,12 @@ module BlueGreenProcess
     @config ||= Config.new
   end
 
+  def self.performance
+    @performance ||= Performance.new
+  end
+
   def self.reset
     @config = Config.new
+    @performance = Performance.new
   end
 end

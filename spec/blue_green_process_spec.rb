@@ -102,6 +102,7 @@ RSpec.describe BlueGreenProcess do
              "green" * 2,
              "blue"  * 2].join
           )
+          expect(BlueGreenProcess.performance.process_switching_time_before_work).to be_a(Numeric)
         end
       end
 
