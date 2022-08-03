@@ -34,6 +34,10 @@ module BlueGreenProcess
       write_and_await_until_read(BlueGreenProcess::PROCESS_COMMAND_WORK)
     end
 
+    def shutdown
+      write(BlueGreenProcess::PROCESS_COMMAND_DIE)
+    end
+
     private
 
     def write_and_await_until_read(command)

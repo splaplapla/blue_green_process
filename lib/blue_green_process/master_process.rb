@@ -77,9 +77,7 @@ module BlueGreenProcess
     end
 
     def shutdown
-      @processes.each do |process|
-        process.wpipe.puts(BlueGreenProcess::PROCESS_COMMAND_DIE)
-      end
+      @processes.each(&:shutdown)
     end
 
     private
