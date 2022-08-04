@@ -73,6 +73,10 @@ RSpec.describe BlueGreenProcess do
 
     context "例外が起きないとき" do
       let(:worker_class) do
+        BlueGreenProcess.configure do |config|
+          config.shared_variables = [:count]
+        end
+
         Class.new(BlueGreenProcess::BaseWorker) do
           def initialize(file)
             @file = file
@@ -80,6 +84,8 @@ RSpec.describe BlueGreenProcess do
 
           def work(label)
             BlueGreenProcess.config.logger.debug "#{label}'ll work(#{$PROCESS_ID})"
+            BlueGreenProcess::SharedVariable.instance.data[:count] ||= 0
+            BlueGreenProcess::SharedVariable.instance.data[:count] += 1
             @file.write label
             @file.flush
           end
@@ -103,6 +109,10 @@ RSpec.describe BlueGreenProcess do
              "blue"  * 2].join
           )
           expect(BlueGreenProcess.performance.process_switching_time_before_work).to be_a(Numeric)
+        end
+
+        context '' do
+          BlueGreenProcess::SharedVariable.instance.data[:count]
         end
       end
 

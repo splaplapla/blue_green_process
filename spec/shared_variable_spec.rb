@@ -19,7 +19,7 @@ RSpec.describe BlueGreenProcess::SharedVariable do
     end
 
     it do
-      expect { subject }.to change { BlueGreenProcess::SharedVariable.instance.data }.from(nil).to({"current_layer"=>"up", "doing_macro"=>true})
+      expect { subject }.to change { BlueGreenProcess::SharedVariable.instance.data }.from({}).to({"current_layer"=>"up", "doing_macro"=>true})
     end
   end
 

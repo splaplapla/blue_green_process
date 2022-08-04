@@ -17,5 +17,6 @@ RSpec.configure do |config|
 
   config.before(:each) do
     BlueGreenProcess.reset
+    BlueGreenProcess::SharedVariable.instance.reset
   end
 end

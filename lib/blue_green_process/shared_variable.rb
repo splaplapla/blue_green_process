@@ -6,7 +6,11 @@ module BlueGreenProcess
   class SharedVariable
     include Singleton
 
-    attr_accessor :data
+    attr_writer :data
+
+    def data
+      @data ||= {}
+    end
 
     def restore(json)
       self.data = json.slice(*BlueGreenProcess.config.shared_variables)
@@ -14,6 +18,10 @@ module BlueGreenProcess
 
     def dump
       data.slice(*BlueGreenProcess.config.shared_variables)
+    end
+
+    def reset
+      @data = nil
     end
   end
 end
