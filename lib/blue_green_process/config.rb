@@ -17,5 +17,13 @@ module BlueGreenProcess
     def logger
       @logger ||= Logger.new("/dev/null")
     end
+
+    def shared_variables
+      @shared_variables ||= []
+    end
+
+    def shared_variables=(value)
+      @shared_variables = value.map(&:to_s)
+    end
   end
 end

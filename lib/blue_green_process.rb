@@ -2,12 +2,15 @@
 
 require "English"
 require_relative "blue_green_process/version"
-require "blue_green_process/master_process"
-require "blue_green_process/worker_process"
-require "blue_green_process/base_worker"
-require "blue_green_process/config"
-require "blue_green_process/performance"
+require_relative  "blue_green_process/master_process"
+require_relative  "blue_green_process/worker_process"
+require_relative  "blue_green_process/base_worker"
+require_relative  "blue_green_process/config"
+require_relative  "blue_green_process/performance"
+require_relative  "blue_green_process/shared_variable"
 require "benchmark"
+require "json"
+require "singleton"
 
 module BlueGreenProcess
   PROCESS_STATUS_ACTIVE = :active

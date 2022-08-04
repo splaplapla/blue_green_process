@@ -15,7 +15,8 @@ module BlueGreenProcess
     def be_active
       return self if status == BlueGreenProcess::PROCESS_STATUS_ACTIVE
 
-      write_and_await_until_read(BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE)
+      write_and_await_until_read(BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE,
+                                 { data: BlueGreenProcess::SharedVariable.instance.data })
       self.status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
       self
     end
@@ -40,22 +41,25 @@ module BlueGreenProcess
 
     private
 
-    def write_and_await_until_read(command)
-      write(command)
+    def write_and_await_until_read(command, args = {})
+      write(command, args)
       wait_response
     end
 
     def wait_response
-      response = read
-      raise "invalid response." unless response == BlueGreenProcess::PROCESS_RESPONSE
+      response = JSON.parse(read)
+      BlueGreenProcess::SharedVariable.instance.restore(response["data"])
+      raise "invalid response." unless response["c"] == BlueGreenProcess::PROCESS_RESPONSE
+
+      [BlueGreenProcess::SharedVariable.instance.data, response]
     end
 
     def read
       rpipe.gets.strip
     end
 
-    def write(token)
-      wpipe.puts token
+    def write(token, args = {})
+      wpipe.puts({ c: token }.merge!(args).to_json)
     end
 
     def enforce_to_be_active

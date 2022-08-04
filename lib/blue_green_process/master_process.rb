@@ -21,6 +21,7 @@ module BlueGreenProcess
 
       pid = fork do
         BlueGreenProcess.config.after_fork.call
+        ::GC.disable
 
         parent_write.close
         parent_read.close
@@ -28,28 +29,30 @@ module BlueGreenProcess
 
         loop do
           data = child_read.gets&.strip
-          case data
+          json = JSON.parse(data)
+          command = json["c"]
+          case command
           when BlueGreenProcess::PROCESS_COMMAND_DIE, nil, ""
             BlueGreenProcess.config.logger.debug "#{label}'ll die(#{$PROCESS_ID})"
             exit 0
           when BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
+            BlueGreenProcess::SharedVariable.instance.restore(json["data"])
             BlueGreenProcess.config.logger.debug "#{label}'ll be active(#{$PROCESS_ID})"
-            child_write.puts BlueGreenProcess::PROCESS_RESPONSE
-            ::GC.disable
+            child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE }.to_json)
           when BlueGreenProcess::PROCESS_COMMAND_BE_INACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
             BlueGreenProcess.config.logger.debug "#{label}'ll be inactive(#{$PROCESS_ID})"
-            child_write.puts BlueGreenProcess::PROCESS_RESPONSE
+            child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE,
+                               data: BlueGreenProcess::SharedVariable.instance.data }.to_json)
             ::GC.start
           when BlueGreenProcess::PROCESS_COMMAND_WORK
             if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
               warn "Should not be able to run in this status"
             end
-            # too verbose
-            # BlueGreenProcess.config.logger.debug "#{label}'ll work(#{$PROCESS_ID})"
+
             worker_instance.work(*label)
-            child_write.puts BlueGreenProcess::PROCESS_RESPONSE
+            child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE }.to_json)
           else
             child_write.puts "NG"
             puts "unknown. from #{label}(#{$PROCESS_ID})"
@@ -82,13 +85,14 @@ module BlueGreenProcess
 
     def active_process
       active_process = nil
+      @stage[!@stage_state].be_inactive
       process_switching_time = Benchmark.realtime do
         active_process = @stage[@stage_state].be_active
       end
       BlueGreenProcess.performance.process_switching_time_before_work = process_switching_time
 
-      @stage[!@stage_state].be_inactive
       result = yield(active_process)
+      active_process.be_inactive
       @stage_state = !@stage_state
       result
     end
