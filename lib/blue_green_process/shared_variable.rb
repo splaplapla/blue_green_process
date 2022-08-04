@@ -13,6 +13,7 @@ module BlueGreenProcess
     end
 
     def restore(json)
+      return if json.nil?
       self.data = json.slice(*BlueGreenProcess.config.shared_variables)
     end
 

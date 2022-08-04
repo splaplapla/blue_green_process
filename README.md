@@ -41,6 +41,50 @@ loop do
 end
 ```
 
+### プロセス間での値の共有
+* Hashが入っている'BlueGreenProcess::SharedVariable.instance.data' の値はmaster process, work processで共有します.
+* 共有するHashのキーは `shared_variables` で許可する必要があります
+* プロセスを入れ替えるタイミングで値の復元とダンプを行います
+* JSONでシリアライズしているので共有できるオブジェクトはプリミティブ型に限定されます
+* GCの時間を軽減するために整数型だけを共有するとパフォーマンスに良さそう
+
+```ruby
+BlueGreenProcess.configure do |config|
+  config.shared_variables = [:count]
+end
+
+worker_class = Class.new(BlueGreenProcess::BaseWorker) do
+  def initialize(*); end
+
+  def work(label)
+    BlueGreenProcess::SharedVariable.instance.data['count'] += 1
+    puts "#{label}'s data['count'] is #{BlueGreenProcess::SharedVariable.instance.data['count']}"
+  end
+end
+
+BlueGreenProcess::SharedVariable.instance.data['count'] = 0
+process = BlueGreenProcess.new(worker_instance: worker_class.new, max_work: 3)
+process.work # blue
+process.work # green
+process.work # blue
+BlueGreenProcess::SharedVariable.instance.data['count']
+```
+
+outputs
+
+```
+blue's data['count'] is 1
+blue's data['count'] is 2
+blue's data['count'] is 3
+green's data['count'] is 4
+green's data['count'] is 5
+green's data['count'] is 6
+blue's data['count'] is 7
+blue's data['count'] is 8
+blue's data['count'] is 9
+9
+```
+
 ### Metrics
 パフォーマンスの解析に使えます
 
@@ -79,8 +123,8 @@ The gem is available as open source under the terms of the [MIT License](https:/
   * これが起きる場合はオブジェクトの生成を減らすとか、blue, greenではなくプロセスのプールを作ってプロセスがGCに時間を費やせるようにする
 
 ## TODO
+* shutdownしないでプロセスを停止したときにSIGINTを受け取りたい
 * runしている間にsignalをもらったらすぐにdieを送りたい
-* プロセスを入れ替えるときに変数を受け渡しをする
 * queueしてからのdequeueするまでの時間を測定したい
     * webサーバでよくあるqueued timeみたいな扱い
     * これが伸びると致命的なのでチューニングできるようにしたいため

@@ -15,7 +15,7 @@ module BlueGreenProcess
     def be_active
       return self if status == BlueGreenProcess::PROCESS_STATUS_ACTIVE
 
-      write_and_await_until_read(BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE, )
+      write_and_await_until_read(BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE, { data: BlueGreenProcess::SharedVariable.instance.data })
       self.status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
       self
     end
@@ -47,7 +47,9 @@ module BlueGreenProcess
 
     def wait_response
       response = JSON.parse(read)
+      BlueGreenProcess::SharedVariable.instance.restore(response['data'])
       raise "invalid response." unless response['c'] == BlueGreenProcess::PROCESS_RESPONSE
+      [ BlueGreenProcess::SharedVariable.instance.data, response ]
     end
 
     def read

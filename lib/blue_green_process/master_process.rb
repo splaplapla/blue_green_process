@@ -29,14 +29,16 @@ module BlueGreenProcess
 
         loop do
           data = child_read.gets&.strip
-          case JSON.parse(data)["c"]
+          json = JSON.parse(data)
+          command = json["c"]
+          case command
           when BlueGreenProcess::PROCESS_COMMAND_DIE, nil, ""
             BlueGreenProcess.config.logger.debug "#{label}'ll die(#{$PROCESS_ID})"
             exit 0
           when BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
+            BlueGreenProcess::SharedVariable.instance.restore(json['data'])
             BlueGreenProcess.config.logger.debug "#{label}'ll be active(#{$PROCESS_ID})"
-            puts BlueGreenProcess::SharedVariable.instance.data
             child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE }.to_json)
           when BlueGreenProcess::PROCESS_COMMAND_BE_INACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
@@ -47,8 +49,7 @@ module BlueGreenProcess
             if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
               warn "Should not be able to run in this status"
             end
-            # too verbose
-            # BlueGreenProcess.config.logger.debug "#{label}'ll work(#{$PROCESS_ID})"
+
             worker_instance.work(*label)
             child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE }.to_json)
           else
@@ -90,6 +91,7 @@ module BlueGreenProcess
       BlueGreenProcess.performance.process_switching_time_before_work = process_switching_time
 
       result = yield(active_process)
+      active_process.be_inactive
       @stage_state = !@stage_state
       result
     end

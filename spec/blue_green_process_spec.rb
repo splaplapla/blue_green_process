@@ -71,12 +71,40 @@ RSpec.describe BlueGreenProcess do
       end
     end
 
-    context "例外が起きないとき" do
+    describe 'shared_variables' do
       let(:worker_class) do
+        Class.new(BlueGreenProcess::BaseWorker) do
+          def initialize(*); end
+
+          def work(label)
+            BlueGreenProcess::SharedVariable.instance.data['count'] += 1
+            puts "#{label}'s data['count'] is #{BlueGreenProcess::SharedVariable.instance.data['count']}"
+          end
+        end
+      end
+
+      before do
         BlueGreenProcess.configure do |config|
           config.shared_variables = [:count]
         end
+      end
 
+      it do
+        BlueGreenProcess::SharedVariable.instance.data['count'] = 0
+        process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 3)
+        expect(BlueGreenProcess::SharedVariable.instance.data['count']).to eq(0)
+        process.work # blue
+        expect(BlueGreenProcess::SharedVariable.instance.data['count']).to eq(3)
+        process.work # green
+        expect(BlueGreenProcess::SharedVariable.instance.data['count']).to eq(6)
+        process.work # blue
+        expect(BlueGreenProcess::SharedVariable.instance.data['count']).to eq(9)
+        process.shutdown
+      end
+    end
+
+    context "例外が起きないとき" do
+      let(:worker_class) do
         Class.new(BlueGreenProcess::BaseWorker) do
           def initialize(file)
             @file = file
@@ -84,8 +112,6 @@ RSpec.describe BlueGreenProcess do
 
           def work(label)
             BlueGreenProcess.config.logger.debug "#{label}'ll work(#{$PROCESS_ID})"
-            BlueGreenProcess::SharedVariable.instance.data[:count] ||= 0
-            BlueGreenProcess::SharedVariable.instance.data[:count] += 1
             @file.write label
             @file.flush
           end
@@ -111,31 +137,27 @@ RSpec.describe BlueGreenProcess do
           expect(BlueGreenProcess.performance.process_switching_time_before_work).to be_a(Numeric)
         end
 
-        context '' do
-          BlueGreenProcess::SharedVariable.instance.data[:count]
-        end
-      end
+        context "has after_fork" do
+          it "workerからファイルへ書き込みをすること" do
+            BlueGreenProcess.configure do |config|
+              config.after_fork = -> { puts "hello fork!!!!!!!" }
+            end
 
-      context "has after_fork" do
-        it "workerからファイルへ書き込みをすること" do
-          BlueGreenProcess.configure do |config|
-            config.after_fork = -> { puts "hello fork!!!!!!!" }
+            process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
+
+            process.work # blue
+            process.work # green
+            process.work # blue
+            process.shutdown
+
+            file.rewind
+            result = file.read
+            expect(result).to eq(
+              ["blue" * 2,
+               "green" * 2,
+               "blue"  * 2].join
+            )
           end
-
-          process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 2)
-
-          process.work # blue
-          process.work # green
-          process.work # blue
-          process.shutdown
-
-          file.rewind
-          result = file.read
-          expect(result).to eq(
-            ["blue" * 2,
-             "green" * 2,
-             "blue"  * 2].join
-          )
         end
       end
     end
