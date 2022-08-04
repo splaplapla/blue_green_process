@@ -45,7 +45,7 @@ end
 パフォーマンスの解析に使えます
 
 ##### BlueGreenProcess.performance.process_switching_time_before_work
-* 最後に、プロセスを入れ替える時にかかった時間を返す
+* プロセスを最後に入れ替えた時にかかった時間を返す
 
 ### Callbacks
 #### after_fork
