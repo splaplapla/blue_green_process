@@ -8,6 +8,7 @@ require "blue_green_process/base_worker"
 require "blue_green_process/config"
 require "blue_green_process/performance"
 require "benchmark"
+require "json"
 
 module BlueGreenProcess
   PROCESS_STATUS_ACTIVE = :active

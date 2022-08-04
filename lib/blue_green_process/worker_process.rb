@@ -55,7 +55,7 @@ module BlueGreenProcess
     end
 
     def write(token)
-      wpipe.puts token
+      wpipe.puts({ c: token }.to_json)
     end
 
     def enforce_to_be_active

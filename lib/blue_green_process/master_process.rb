@@ -28,7 +28,7 @@ module BlueGreenProcess
 
         loop do
           data = child_read.gets&.strip
-          case data
+          case JSON.parse(data)["c"]
           when BlueGreenProcess::PROCESS_COMMAND_DIE, nil, ""
             BlueGreenProcess.config.logger.debug "#{label}'ll die(#{$PROCESS_ID})"
             exit 0
