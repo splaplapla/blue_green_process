@@ -82,12 +82,12 @@ module BlueGreenProcess
 
     def active_process
       active_process = nil
+      @stage[!@stage_state].be_inactive
       process_switching_time = Benchmark.realtime do
         active_process = @stage[@stage_state].be_active
       end
       BlueGreenProcess.performance.process_switching_time_before_work = process_switching_time
 
-      @stage[!@stage_state].be_inactive
       result = yield(active_process)
       @stage_state = !@stage_state
       result
