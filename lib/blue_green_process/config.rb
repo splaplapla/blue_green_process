@@ -4,7 +4,7 @@ require "logger"
 
 module BlueGreenProcess
   class Config
-    attr_writer :logger, :shared_variables
+    attr_writer :logger
 
     def after_fork=(block)
       @after_fork_block = block

@@ -37,13 +37,14 @@ module BlueGreenProcess
             exit 0
           when BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
-            BlueGreenProcess::SharedVariable.instance.restore(json['data'])
+            BlueGreenProcess::SharedVariable.instance.restore(json["data"])
             BlueGreenProcess.config.logger.debug "#{label}'ll be active(#{$PROCESS_ID})"
             child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE }.to_json)
           when BlueGreenProcess::PROCESS_COMMAND_BE_INACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
             BlueGreenProcess.config.logger.debug "#{label}'ll be inactive(#{$PROCESS_ID})"
-            child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE, data: BlueGreenProcess::SharedVariable.instance.data }.to_json)
+            child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE,
+                               data: BlueGreenProcess::SharedVariable.instance.data }.to_json)
             ::GC.start
           when BlueGreenProcess::PROCESS_COMMAND_WORK
             if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE

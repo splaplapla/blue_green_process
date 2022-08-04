@@ -71,14 +71,14 @@ RSpec.describe BlueGreenProcess do
       end
     end
 
-    describe 'shared_variables' do
+    describe "shared_variables" do
       let(:worker_class) do
         Class.new(BlueGreenProcess::BaseWorker) do
           def initialize(*); end
 
           def work(label)
-            BlueGreenProcess::SharedVariable.instance.data['count'] += 1
-            puts "#{label}'s data['count'] is #{BlueGreenProcess::SharedVariable.instance.data['count']}"
+            BlueGreenProcess::SharedVariable.instance.data["count"] += 1
+            puts "#{label}'s data['count'] is #{BlueGreenProcess::SharedVariable.instance.data["count"]}"
           end
         end
       end
@@ -90,15 +90,15 @@ RSpec.describe BlueGreenProcess do
       end
 
       it do
-        BlueGreenProcess::SharedVariable.instance.data['count'] = 0
+        BlueGreenProcess::SharedVariable.instance.data["count"] = 0
         process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 3)
-        expect(BlueGreenProcess::SharedVariable.instance.data['count']).to eq(0)
+        expect(BlueGreenProcess::SharedVariable.instance.data["count"]).to eq(0)
         process.work # blue
-        expect(BlueGreenProcess::SharedVariable.instance.data['count']).to eq(3)
+        expect(BlueGreenProcess::SharedVariable.instance.data["count"]).to eq(3)
         process.work # green
-        expect(BlueGreenProcess::SharedVariable.instance.data['count']).to eq(6)
+        expect(BlueGreenProcess::SharedVariable.instance.data["count"]).to eq(6)
         process.work # blue
-        expect(BlueGreenProcess::SharedVariable.instance.data['count']).to eq(9)
+        expect(BlueGreenProcess::SharedVariable.instance.data["count"]).to eq(9)
         process.shutdown
       end
     end

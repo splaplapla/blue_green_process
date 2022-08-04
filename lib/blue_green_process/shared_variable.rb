@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'singleton'
+require "singleton"
 
 module BlueGreenProcess
   class SharedVariable
@@ -14,6 +14,7 @@ module BlueGreenProcess
 
     def restore(json)
       return if json.nil?
+
       self.data = json.slice(*BlueGreenProcess.config.shared_variables)
     end
 
