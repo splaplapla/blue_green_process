@@ -21,6 +21,7 @@ module BlueGreenProcess
 
       pid = fork do
         BlueGreenProcess.config.after_fork.call
+        ::GC.disable
 
         parent_write.close
         parent_read.close
@@ -36,7 +37,6 @@ module BlueGreenProcess
             process_status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
             BlueGreenProcess.config.logger.debug "#{label}'ll be active(#{$PROCESS_ID})"
             child_write.puts BlueGreenProcess::PROCESS_RESPONSE
-            ::GC.disable
           when BlueGreenProcess::PROCESS_COMMAND_BE_INACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
             BlueGreenProcess.config.logger.debug "#{label}'ll be inactive(#{$PROCESS_ID})"
