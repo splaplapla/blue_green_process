@@ -100,6 +100,7 @@ module BlueGreenProcess
 
     def shutdown
       @processes.each(&:shutdown)
+      Process.waitall
     end
 
     private

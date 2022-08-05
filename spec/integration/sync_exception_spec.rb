@@ -20,8 +20,7 @@ RSpec.describe "BlueGreenProcess integration sync exception" do
       process = BlueGreenProcess.new(worker_instance: worker_class.new, max_work: 3)
       process.work # blue
       expect { process.work }.to raise_error(RuntimeError, "これはエラーです") # green
-      children = Process.waitall
-      expect(children.map(&:last).map(&:exited?)).to eq([true, true])
+      expect(Process.waitall).to eq([])
     end
   end
 
@@ -40,8 +39,7 @@ RSpec.describe "BlueGreenProcess integration sync exception" do
       process = BlueGreenProcess.new(worker_instance: worker_class.new, max_work: 3)
       process.work # blue
       expect { process.work }.to raise_error(Errno::ESHUTDOWN) # green
-      children = Process.waitall
-      expect(children.map(&:last).map(&:exited?)).to eq([true, true])
+      expect(Process.waitall).to eq([])
     end
   end
 end
