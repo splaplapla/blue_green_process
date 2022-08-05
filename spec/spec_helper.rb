@@ -19,4 +19,8 @@ RSpec.configure do |config|
     BlueGreenProcess.reset
     BlueGreenProcess::SharedVariable.instance.reset
   end
+
+  config.before(:each) do
+    BlueGreenProcess.config.logger = Logger.new($stdout)
+  end
 end
