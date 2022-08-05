@@ -1,25 +1,47 @@
 # frozen_string_literal: true
 
-RSpec.describe "BlueGreenProcess sync exception" do
-  let(:worker_instance) { worker_class.new }
+RSpec.describe "BlueGreenProcess integration sync exception" do
+  before do
+    Process.waitall
+  end
 
-  describe "shared_variables" do
+  context 'thorw RuntimeError' do
     let(:worker_class) do
       Class.new(BlueGreenProcess::BaseWorker) do
         def work(label)
-          puts "#{label}'s data['count'] is #{BlueGreenProcess::SharedVariable.instance.data["count"]}"
+          if label == :green
+            raise RuntimeError, "これはエラーです"
+          end
         end
       end
     end
 
-    it do
-      BlueGreenProcess::SharedVariable.instance.data["count"] = 0
-      process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 3)
-      expect(BlueGreenProcess::SharedVariable.instance.data["count"]).to eq(0)
+    it "例外がmasterプロセスに伝播すること" do
+      process = BlueGreenProcess.new(worker_instance: worker_class.new, max_work: 3)
       process.work # blue
-      process.work # green
-      process.shutdown
+      expect { process.work }.to raise_error(RuntimeError, "これはエラーです") # green
+      children = Process.waitall
+      expect(children.map(&:last).map(&:exited?)).to eq([true, true])
+    end
+  end
+
+  context 'thorw Errno::ESHUTDOWN' do
+    let(:worker_class) do
+      Class.new(BlueGreenProcess::BaseWorker) do
+        def work(label)
+          if label == :green
+            raise Errno::ESHUTDOWN
+          end
+        end
+      end
+    end
+
+    it "例外がmasterプロセスに伝播すること" do
+      process = BlueGreenProcess.new(worker_instance: worker_class.new, max_work: 3)
+      process.work # blue
+      expect { process.work }.to raise_error(Errno::ESHUTDOWN) # green
+      children = Process.waitall
+      expect(children.map(&:last).map(&:exited?)).to eq([true, true])
     end
   end
 end
-

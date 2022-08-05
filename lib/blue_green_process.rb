@@ -21,7 +21,8 @@ module BlueGreenProcess
   PROCESS_COMMAND_BE_INACTIVE = "work"
   PROCESS_COMMAND_WORK = "be_inactive"
 
-  PROCESS_RESPONSE = "ACK"
+  RESPONSE_OK = "OK"
+  RESPONSE_ERROR = "ERR"
 
   def self.new(worker_instance:, max_work:)
     BlueGreenProcess::MasterProcess.new(worker_instance: worker_instance, max_work: max_work)

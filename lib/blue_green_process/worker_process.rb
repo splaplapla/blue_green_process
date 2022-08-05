@@ -49,9 +49,14 @@ module BlueGreenProcess
     def wait_response
       response = JSON.parse(read)
       BlueGreenProcess::SharedVariable.instance.restore(response["data"])
-      raise "invalid response." unless response["c"] == BlueGreenProcess::PROCESS_RESPONSE
-
-      [BlueGreenProcess::SharedVariable.instance.data, response]
+      case response["c"]
+      when BlueGreenProcess::RESPONSE_OK
+        return [BlueGreenProcess::SharedVariable.instance.data, response]
+      when BlueGreenProcess::RESPONSE_ERROR
+        raise BlueGreenProcess::ErrorWrapper.new(response["err_class"], response["err_message"])
+      else
+        raise "invalid response."
+      end
     end
 
     def read

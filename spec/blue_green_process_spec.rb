@@ -43,32 +43,4 @@ RSpec.describe BlueGreenProcess do
       described_class.config.after_fork.call
     end
   end
-
-  describe "integration" do
-    before do
-      BlueGreenProcess.config.logger = Logger.new($stdout)
-    end
-    let(:file) { Tempfile.new }
-    let(:worker_instance) { worker_class.new(file) }
-
-    context "work内で例外が起きるとき" do
-      let(:worker_class) do
-        Class.new(BlueGreenProcess::BaseWorker) do
-          def initialize(file)
-            @file = file
-          end
-
-          def work(_label)
-            raise RuntimeError
-          end
-        end
-      end
-
-      it "blue greenなプロセスが停止すること" do
-      end
-
-      it "例外がmasterプロセスに伝播すること" do
-      end
-    end
-  end
 end
