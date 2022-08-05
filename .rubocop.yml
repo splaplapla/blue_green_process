@@ -25,3 +25,12 @@ Metrics/AbcSize:
 
 Metrics/MethodLength:
   Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Security/Eval:
+  Enabled: false
+
+Lint/MissingSuper:
+  Enabled: false

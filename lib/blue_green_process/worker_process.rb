@@ -51,7 +51,7 @@ module BlueGreenProcess
       BlueGreenProcess::SharedVariable.instance.restore(response["data"])
       case response["c"]
       when BlueGreenProcess::RESPONSE_OK
-        return [BlueGreenProcess::SharedVariable.instance.data, response]
+        [BlueGreenProcess::SharedVariable.instance.data, response]
       when BlueGreenProcess::RESPONSE_ERROR
         raise BlueGreenProcess::ErrorWrapper.new(response["err_class"], response["err_message"])
       else

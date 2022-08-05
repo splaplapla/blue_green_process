@@ -5,13 +5,11 @@ RSpec.describe "BlueGreenProcess integration sync exception" do
     Process.waitall
   end
 
-  context 'thorw RuntimeError' do
+  context "thorw RuntimeError" do
     let(:worker_class) do
       Class.new(BlueGreenProcess::BaseWorker) do
         def work(label)
-          if label == :green
-            raise RuntimeError, "これはエラーです"
-          end
+          raise "これはエラーです" if label == :green
         end
       end
     end
@@ -24,13 +22,11 @@ RSpec.describe "BlueGreenProcess integration sync exception" do
     end
   end
 
-  context 'thorw Errno::ESHUTDOWN' do
+  context "thorw Errno::ESHUTDOWN" do
     let(:worker_class) do
       Class.new(BlueGreenProcess::BaseWorker) do
         def work(label)
-          if label == :green
-            raise Errno::ESHUTDOWN
-          end
+          raise Errno::ESHUTDOWN if label == :green
         end
       end
     end

@@ -67,8 +67,9 @@ module BlueGreenProcess
             begin
               worker_instance.work(*label)
               child_write.puts({ c: BlueGreenProcess::RESPONSE_OK }.to_json)
-            rescue => e
-              child_write.puts({ c: BlueGreenProcess::RESPONSE_ERROR, err_class: e.class.name, err_message: e.message }.to_json)
+            rescue StandardError => e
+              child_write.puts({ c: BlueGreenProcess::RESPONSE_ERROR, err_class: e.class.name,
+                                 err_message: e.message }.to_json)
             end
           else
             child_write.puts "NG"
