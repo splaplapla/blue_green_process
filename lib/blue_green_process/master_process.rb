@@ -1,6 +1,15 @@
 # frozen_string_literal: true
 
 module BlueGreenProcess
+  class ErrorWrapper < StandardError
+    attr_accessor :error_class, :message
+
+    def initialize(error_class, error_message)
+      self.error_class = error_class
+      self.message = error_message
+    end
+  end
+
   class MasterProcess
     def initialize(worker_instance:, max_work:)
       blue = fork_process(label: :blue, worker_instance: worker_instance)
@@ -13,6 +22,10 @@ module BlueGreenProcess
       }
       @processes = @stage.values
       @max_work = max_work
+    end
+
+    def pids
+      @processes.map(&:pid)
     end
 
     def fork_process(label:, worker_instance:)
@@ -39,11 +52,11 @@ module BlueGreenProcess
             process_status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
             BlueGreenProcess::SharedVariable.instance.restore(json["data"])
             BlueGreenProcess.config.logger.debug "#{label}'ll be active(#{$PROCESS_ID})"
-            child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE }.to_json)
+            child_write.puts({ c: BlueGreenProcess::RESPONSE_OK }.to_json)
           when BlueGreenProcess::PROCESS_COMMAND_BE_INACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
             BlueGreenProcess.config.logger.debug "#{label}'ll be inactive(#{$PROCESS_ID})"
-            child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE,
+            child_write.puts({ c: BlueGreenProcess::RESPONSE_OK,
                                data: BlueGreenProcess::SharedVariable.instance.data }.to_json)
             ::GC.start
           when BlueGreenProcess::PROCESS_COMMAND_WORK
@@ -51,8 +64,13 @@ module BlueGreenProcess
               warn "Should not be able to run in this status"
             end
 
-            worker_instance.work(*label)
-            child_write.puts({ c: BlueGreenProcess::PROCESS_RESPONSE }.to_json)
+            begin
+              worker_instance.work(*label)
+              child_write.puts({ c: BlueGreenProcess::RESPONSE_OK }.to_json)
+            rescue StandardError => e
+              child_write.puts({ c: BlueGreenProcess::RESPONSE_ERROR, err_class: e.class.name,
+                                 err_message: e.message }.to_json)
+            end
           else
             child_write.puts "NG"
             puts "unknown. from #{label}(#{$PROCESS_ID})"
@@ -75,10 +93,15 @@ module BlueGreenProcess
           process.work
         end
       end
+    rescue BlueGreenProcess::ErrorWrapper => e
+      shutdown
+      BlueGreenProcess.config.logger.error "#{e.error_class}: #{e.message}"
+      raise eval(e.error_class), e.message
     end
 
     def shutdown
       @processes.each(&:shutdown)
+      Process.waitall
     end
 
     private

@@ -98,7 +98,7 @@ blue's data['count'] is 9
 
 ```ruby
 BlueGreenProcess.configure do |config|
-config.after_fork = ->{ puts 'forked!' }
+  config.after_fork = ->{ puts 'forked!' }
 end
 ```
 
@@ -121,12 +121,10 @@ The gem is available as open source under the terms of the [MIT License](https:/
 * processが行う処理内容は引数を含めて固定
 * A processがinactiveになった時に行うGC.startに時間がかかると、次にA processがbe_activeになったらレスポンスが遅れる. 構造上の仕様.
   * これが起きる場合はオブジェクトの生成を減らすとか、blue, greenではなくプロセスのプールを作ってプロセスがGCに時間を費やせるようにする
+* workerプロセスでエラーが起きたらmasterプロセスにそのエラーが伝わり、workerプロセスは終了します
 
 ## TODO
 * shutdownしないでプロセスを停止したときにSIGINTを受け取りたい
 * runしている間にsignalをもらったらすぐにdieを送りたい
-* queueしてからのdequeueするまでの時間を測定したい
-    * webサーバでよくあるqueued timeみたいな扱い
-    * これが伸びると致命的なのでチューニングできるようにしたいため
 * inactiveからactiveへの切り替えになる時間を測定したい
   * GCが長引いてactiveプロセスが処理開始に時間がかかるので
