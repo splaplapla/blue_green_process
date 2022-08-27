@@ -114,10 +114,17 @@ module BlueGreenProcess
       end
       BlueGreenProcess.performance.process_switching_time_before_work = process_switching_time
 
-      result = yield(active_process)
+      yield(active_process)
+
       active_process.be_inactive
-      @stage_state = !@stage_state
-      result
+      is_switch_process = !BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process
+      if is_switch_process
+        @stage_state = !@stage_state
+      else
+        BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process = false
+        active_process.be_active
+      end
+      is_switch_process
     end
   end
 end
