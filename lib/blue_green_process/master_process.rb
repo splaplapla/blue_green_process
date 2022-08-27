@@ -117,14 +117,14 @@ module BlueGreenProcess
       yield(active_process)
 
       active_process.be_inactive
-      is_switch_process = !BlueGreenProcess::SharedVariable.extend_run_on_this_process
-      if is_switch_process
-        @stage_state = !@stage_state
-      else
+      if BlueGreenProcess::SharedVariable.extend_run_on_this_process
         BlueGreenProcess::SharedVariable.extend_run_on_this_process = false
         active_process.be_active
+      else
+        @stage_state = !@stage_state
       end
-      is_switch_process
+
+      true
     end
   end
 end
