@@ -14,12 +14,12 @@ RSpec.describe BlueGreenProcess::SharedVariable do
       BlueGreenProcess.configure do |config|
         config.shared_variables = [:current_layer, "doing_macro"]
       end
-      BlueGreenProcess::SharedVariable.instance.data = nil
+      BlueGreenProcess::SharedVariable.data = nil
     end
 
     it do
       expect { subject }.to change {
-                              BlueGreenProcess::SharedVariable.instance.data
+                              BlueGreenProcess::SharedVariable.data
                             }.from({}).to({ "current_layer" => "up", "doing_macro" => true })
     end
   end
@@ -31,7 +31,7 @@ RSpec.describe BlueGreenProcess::SharedVariable do
       BlueGreenProcess.configure do |config|
         config.shared_variables = [:current_layer, "doing_macro"]
       end
-      BlueGreenProcess::SharedVariable.instance.data = {
+      BlueGreenProcess::SharedVariable.data = {
         "foo" => 1,
         "current_layer" => "up",
         "doing_macro" => true

@@ -42,7 +42,7 @@ end
 ```
 
 ### プロセス間での値の共有
-* Hashが入っている'BlueGreenProcess::SharedVariable.instance.data' の値はmaster process, work processで共有します.
+* Hashが入っている'BlueGreenProcess::SharedVariable.data' の値はmaster process, work processで共有します.
 * 共有するHashのキーは `shared_variables` で許可する必要があります
 * プロセスを入れ替えるタイミングで値の復元とダンプを行います
 * JSONでシリアライズしているので共有できるオブジェクトはプリミティブ型に限定されます
@@ -58,17 +58,17 @@ worker_class = Class.new(BlueGreenProcess::BaseWorker) do
   def initialize(*); end
 
   def work(label)
-    BlueGreenProcess::SharedVariable.instance.data['count'] += 1
-    puts "#{label}'s data['count'] is #{BlueGreenProcess::SharedVariable.instance.data['count']}"
+    BlueGreenProcess::SharedVariable.data['count'] += 1
+    puts "#{label}'s data['count'] is #{BlueGreenProcess::SharedVariable.data['count']}"
   end
 end
 
-BlueGreenProcess::SharedVariable.instance.data['count'] = 0
+BlueGreenProcess::SharedVariable.data['count'] = 0
 process = BlueGreenProcess.new(worker_instance: worker_class.new, max_work: 3)
 process.work # blue
 process.work # green
 process.work # blue
-BlueGreenProcess::SharedVariable.instance.data['count']
+BlueGreenProcess::SharedVariable.data['count']
 ```
 
 outputs
@@ -87,7 +87,7 @@ blue's data['count'] is 9
 ```
 
 ### 単一プロセスでの実行を延長する
-* workerクラスの中で、`BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process`にtrueをセットするともう一度同じプロセスで処理を行います
+* workerクラスの中で、`BlueGreenProcess::SharedVariable.extend_run_on_this_process`にtrueをセットするともう一度同じプロセスで処理を行います
     * 次の実行でtrueを明示しない限りはプロセスを切り替えます
 
 ```ruby
@@ -99,13 +99,13 @@ worker_class = Class.new(BlueGreenProcess::BaseWorker) do
   def initialize(*); end
 
   def work(label)
-    BlueGreenProcess::SharedVariable.instance.data['count'] += 1
-    BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process = true
-    puts "#{label}'s data['count'] is #{BlueGreenProcess::SharedVariable.instance.data['count']}"
+    BlueGreenProcess::SharedVariable.data['count'] += 1
+    BlueGreenProcess::SharedVariable.extend_run_on_this_process = true
+    puts "#{label}'s data['count'] is #{BlueGreenProcess::SharedVariable.data['count']}"
   end
 end
 
-BlueGreenProcess::SharedVariable.instance.data['count'] = 0
+BlueGreenProcess::SharedVariable.data['count'] = 0
 process = BlueGreenProcess.new(worker_instance: worker_class.new, max_work: 3)
 process.work # blue
 process.work # blue

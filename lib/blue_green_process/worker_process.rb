@@ -16,7 +16,7 @@ module BlueGreenProcess
       return self if status == BlueGreenProcess::PROCESS_STATUS_ACTIVE
 
       write_and_await_until_read(BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE,
-                                 { data: BlueGreenProcess::SharedVariable.instance.data })
+                                 { data: BlueGreenProcess::SharedVariable.data })
       self.status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
       self
     end
@@ -51,7 +51,7 @@ module BlueGreenProcess
       BlueGreenProcess::SharedVariable.instance.restore(response["data"])
       case response["c"]
       when BlueGreenProcess::RESPONSE_OK
-        [BlueGreenProcess::SharedVariable.instance.data, response]
+        [BlueGreenProcess::SharedVariable.data, response]
       when BlueGreenProcess::RESPONSE_ERROR
         raise BlueGreenProcess::ErrorWrapper.new(response["err_class"], response["err_message"])
       else
