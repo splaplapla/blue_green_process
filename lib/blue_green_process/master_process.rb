@@ -57,7 +57,7 @@ module BlueGreenProcess
             process_status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
             BlueGreenProcess.config.logger.debug "#{label}'ll be inactive(#{$PROCESS_ID})"
             child_write.puts({ c: BlueGreenProcess::RESPONSE_OK,
-                               data: BlueGreenProcess::SharedVariable.instance.data }.to_json)
+                               data: BlueGreenProcess::SharedVariable.data }.to_json)
             ::GC.start
           when BlueGreenProcess::PROCESS_COMMAND_WORK
             if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
@@ -117,11 +117,11 @@ module BlueGreenProcess
       yield(active_process)
 
       active_process.be_inactive
-      is_switch_process = !BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process
+      is_switch_process = !BlueGreenProcess::SharedVariable.extend_run_on_this_process
       if is_switch_process
         @stage_state = !@stage_state
       else
-        BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process = false
+        BlueGreenProcess::SharedVariable.extend_run_on_this_process = false
         active_process.be_active
       end
       is_switch_process

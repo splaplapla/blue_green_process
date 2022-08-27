@@ -7,10 +7,10 @@ RSpec.describe "BlueGreenProcess integration extend run on single_process" do
     let(:worker_class) do
       Class.new(BlueGreenProcess::BaseWorker) do
         def work(label)
-          BlueGreenProcess::SharedVariable.instance.data["count"] += 1
-          BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process = true
-          BlueGreenProcess::SharedVariable.instance.data["count_display"] =
-            "#{label}:#{BlueGreenProcess::SharedVariable.instance.data["count"]}"
+          BlueGreenProcess::SharedVariable.data["count"] += 1
+          BlueGreenProcess::SharedVariable.extend_run_on_this_process = true
+          BlueGreenProcess::SharedVariable.data["count_display"] =
+            "#{label}:#{BlueGreenProcess::SharedVariable.data["count"]}"
         end
       end
     end
@@ -22,15 +22,15 @@ RSpec.describe "BlueGreenProcess integration extend run on single_process" do
     end
 
     it do
-      BlueGreenProcess::SharedVariable.instance.data["count"] = 0
+      BlueGreenProcess::SharedVariable.data["count"] = 0
       process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 3)
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq(nil)
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq(nil)
       process.work # blue
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq("blue:3")
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq("blue:3")
       process.work # blue
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq("blue:6")
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq("blue:6")
       process.work # blue
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq("blue:9")
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq("blue:9")
     ensure
       process&.shutdown
     end
@@ -40,10 +40,10 @@ RSpec.describe "BlueGreenProcess integration extend run on single_process" do
     let(:worker_class) do
       Class.new(BlueGreenProcess::BaseWorker) do
         def work(label)
-          BlueGreenProcess::SharedVariable.instance.data["count"] += 1
-          BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process = false
-          BlueGreenProcess::SharedVariable.instance.data["count_display"] =
-            "#{label}:#{BlueGreenProcess::SharedVariable.instance.data["count"]}"
+          BlueGreenProcess::SharedVariable.data["count"] += 1
+          BlueGreenProcess::SharedVariable.extend_run_on_this_process = false
+          BlueGreenProcess::SharedVariable.data["count_display"] =
+            "#{label}:#{BlueGreenProcess::SharedVariable.data["count"]}"
         end
       end
     end
@@ -55,15 +55,15 @@ RSpec.describe "BlueGreenProcess integration extend run on single_process" do
     end
 
     it do
-      BlueGreenProcess::SharedVariable.instance.data["count"] = 0
+      BlueGreenProcess::SharedVariable.data["count"] = 0
       process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 3)
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq(nil)
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq(nil)
       process.work # blue
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq("blue:3")
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq("blue:3")
       process.work # green
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq("green:6")
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq("green:6")
       process.work # blue
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq("blue:9")
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq("blue:9")
     ensure
       process&.shutdown
     end
@@ -73,12 +73,12 @@ RSpec.describe "BlueGreenProcess integration extend run on single_process" do
     let(:worker_class) do
       Class.new(BlueGreenProcess::BaseWorker) do
         def work(label)
-          BlueGreenProcess::SharedVariable.instance.data["count"] += 1
-          if BlueGreenProcess::SharedVariable.instance.data["count"] == 6
-            BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process = true
+          BlueGreenProcess::SharedVariable.data["count"] += 1
+          if BlueGreenProcess::SharedVariable.data["count"] == 6
+            BlueGreenProcess::SharedVariable.extend_run_on_this_process = true
           end
-          BlueGreenProcess::SharedVariable.instance.data["count_display"] =
-            "#{label}:#{BlueGreenProcess::SharedVariable.instance.data["count"]}"
+          BlueGreenProcess::SharedVariable.data["count_display"] =
+            "#{label}:#{BlueGreenProcess::SharedVariable.data["count"]}"
         end
       end
     end
@@ -90,15 +90,15 @@ RSpec.describe "BlueGreenProcess integration extend run on single_process" do
     end
 
     it do
-      BlueGreenProcess::SharedVariable.instance.data["count"] = 0
+      BlueGreenProcess::SharedVariable.data["count"] = 0
       process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 3)
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq(nil)
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq(nil)
       process.work # blue
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq("blue:3")
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq("blue:3")
       process.work # green
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq("green:6")
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq("green:6")
       process.work # green
-      expect(BlueGreenProcess::SharedVariable.instance.data["count_display"]).to eq("green:9")
+      expect(BlueGreenProcess::SharedVariable.data["count_display"]).to eq("green:9")
     ensure
       process&.shutdown
     end

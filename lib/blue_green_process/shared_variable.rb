@@ -8,6 +8,22 @@ module BlueGreenProcess
 
     attr_writer :data
 
+    def self.data
+      instance.data
+    end
+
+    def self.data=(value)
+      instance.data = value
+    end
+
+    def self.extend_run_on_this_process
+      instance.extend_run_on_this_process
+    end
+
+    def self.extend_run_on_this_process=(value)
+      instance.extend_run_on_this_process = (value)
+    end
+
     # @return [Hash]
     def data
       @data ||= {}
