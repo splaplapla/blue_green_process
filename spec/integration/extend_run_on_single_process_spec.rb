@@ -9,14 +9,15 @@ RSpec.describe "BlueGreenProcess integration extend run on single_process" do
         def work(label)
           BlueGreenProcess::SharedVariable.instance.data["count"] += 1
           BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process = true
-          BlueGreenProcess::SharedVariable.instance.data["count_display"] = "#{label}:#{BlueGreenProcess::SharedVariable.instance.data['count']}"
+          BlueGreenProcess::SharedVariable.instance.data["count_display"] =
+            "#{label}:#{BlueGreenProcess::SharedVariable.instance.data["count"]}"
         end
       end
     end
 
     before do
       BlueGreenProcess.configure do |config|
-        config.shared_variables = [:count, :count_display]
+        config.shared_variables = %i[count count_display]
       end
     end
 
@@ -41,14 +42,15 @@ RSpec.describe "BlueGreenProcess integration extend run on single_process" do
         def work(label)
           BlueGreenProcess::SharedVariable.instance.data["count"] += 1
           BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process = false
-          BlueGreenProcess::SharedVariable.instance.data["count_display"] = "#{label}:#{BlueGreenProcess::SharedVariable.instance.data['count']}"
+          BlueGreenProcess::SharedVariable.instance.data["count_display"] =
+            "#{label}:#{BlueGreenProcess::SharedVariable.instance.data["count"]}"
         end
       end
     end
 
     before do
       BlueGreenProcess.configure do |config|
-        config.shared_variables = [:count, :count_display]
+        config.shared_variables = %i[count count_display]
       end
     end
 
@@ -75,14 +77,15 @@ RSpec.describe "BlueGreenProcess integration extend run on single_process" do
           if BlueGreenProcess::SharedVariable.instance.data["count"] == 6
             BlueGreenProcess::SharedVariable.instance.extend_run_on_this_process = true
           end
-          BlueGreenProcess::SharedVariable.instance.data["count_display"] = "#{label}:#{BlueGreenProcess::SharedVariable.instance.data['count']}"
+          BlueGreenProcess::SharedVariable.instance.data["count_display"] =
+            "#{label}:#{BlueGreenProcess::SharedVariable.instance.data["count"]}"
         end
       end
     end
 
     before do
       BlueGreenProcess.configure do |config|
-        config.shared_variables = [:count, :count_display]
+        config.shared_variables = %i[count count_display]
       end
     end
 

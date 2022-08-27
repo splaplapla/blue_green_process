@@ -15,12 +15,12 @@ module BlueGreenProcess
 
     # @return [Boolean]
     def extend_run_on_this_process
-      @data['extend_run_on_this_process'] ||= false
+      @data["extend_run_on_this_process"] ||= false
     end
 
     # @return [Boolean]
     def extend_run_on_this_process=(value)
-      @data['extend_run_on_this_process'] = value
+      @data["extend_run_on_this_process"] = value
     end
 
     # @return [Hash]
