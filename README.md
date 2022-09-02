@@ -31,14 +31,7 @@ end
 sleep(1)
 
 process.shutdown
-loop do
-  result = Process.waitall
-  if result.empty?
-    break
-  else
-    sleep(0.01)
-  end
-end
+Process.waitall
 ```
 
 ### プロセス間での値の共有
