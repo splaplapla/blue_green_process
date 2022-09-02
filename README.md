@@ -43,11 +43,11 @@ end
 
 ### プロセス間での値の共有
 * Hashが入っている'BlueGreenProcess::SharedVariable.data' の値はmaster process, work processで共有します.
-* 共有するHashのキーは `shared_variables` で許可する必要があります
+* 共有するHashのキーは `config.shared_variables` で許可する必要があります
 * プロセスを入れ替えるタイミングで値の復元とダンプを行います
 * JSONでシリアライズしているので共有できるオブジェクトはプリミティブ型に限定されます
 * GCの時間を軽減するために整数型だけを共有するとパフォーマンスに良さそう
-* `extend_run_on_this_process` は予約語です
+* `config.shared_variables` に最初から入っている `extend_run_on_this_process` は消すことができません
 
 ```ruby
 BlueGreenProcess.configure do |config|
