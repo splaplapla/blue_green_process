@@ -38,6 +38,10 @@ module BlueGreenProcess
     @config ||= Config.new
   end
 
+  def self.logger
+    config.logger
+  end
+
   def self.performance
     @performance ||= Performance.new
   end

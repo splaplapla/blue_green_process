@@ -46,16 +46,16 @@ module BlueGreenProcess
           command = json["c"]
           case command
           when BlueGreenProcess::PROCESS_COMMAND_DIE, nil, ""
-            BlueGreenProcess.config.logger.debug "#{label}'ll die(#{$PROCESS_ID})"
+            BlueGreenProcess.logger.debug "[BLUE_GREEN_PROCESS] #{label} will die(#{$PROCESS_ID})"
             exit 0
           when BlueGreenProcess::PROCESS_COMMAND_BE_ACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_ACTIVE
             BlueGreenProcess::SharedVariable.instance.restore(json["data"])
-            BlueGreenProcess.config.logger.debug "#{label}'ll be active(#{$PROCESS_ID})"
+            BlueGreenProcess.logger.debug "[BLUE_GREEN_PROCESS] #{label} has become active(#{$PROCESS_ID})"
             child_write.puts({ c: BlueGreenProcess::RESPONSE_OK }.to_json)
           when BlueGreenProcess::PROCESS_COMMAND_BE_INACTIVE
             process_status = BlueGreenProcess::PROCESS_STATUS_INACTIVE
-            BlueGreenProcess.config.logger.debug "#{label}'ll be inactive(#{$PROCESS_ID})"
+            BlueGreenProcess.logger.debug "[BLUE_GREEN_PROCESS] #{label} has become inactive(#{$PROCESS_ID})"
             child_write.puts({ c: BlueGreenProcess::RESPONSE_OK,
                                data: BlueGreenProcess::SharedVariable.data }.to_json)
             ::GC.start
@@ -95,7 +95,7 @@ module BlueGreenProcess
       end
     rescue BlueGreenProcess::ErrorWrapper => e
       shutdown
-      BlueGreenProcess.config.logger.error "#{e.error_class}: #{e.message}"
+      BlueGreenProcess.logger.error "[BLUE_GREEN_PROCESS] #{e.error_class}: #{e.message}"
       raise eval(e.error_class), e.message
     end
 
