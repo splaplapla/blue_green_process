@@ -34,3 +34,9 @@ Security/Eval:
 
 Lint/MissingSuper:
   Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Lint/AmbiguousBlockAssociation:
+  Enabled: false

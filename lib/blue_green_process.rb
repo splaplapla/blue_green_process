@@ -18,8 +18,8 @@ module BlueGreenProcess
 
   PROCESS_COMMAND_DIE = "die"
   PROCESS_COMMAND_BE_ACTIVE = "be_active"
-  PROCESS_COMMAND_BE_INACTIVE = "work"
-  PROCESS_COMMAND_WORK = "be_inactive"
+  PROCESS_COMMAND_BE_INACTIVE = "be_inactive"
+  PROCESS_COMMAND_WORK = "work"
 
   RESPONSE_OK = "OK"
   RESPONSE_ERROR = "ERR"
