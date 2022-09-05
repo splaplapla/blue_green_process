@@ -82,6 +82,8 @@ blue's data['count'] is 9
 ### 単一プロセスでの実行を延長する
 * workerクラスの中で、`BlueGreenProcess::SharedVariable.extend_run_on_this_process`にtrueをセットするともう一度同じプロセスで処理を行います
     * 次の実行でtrueを明示しない限りはプロセスを切り替えます
+* 単一プロセスでの実行を延長するとGC.startを実行しなくなります
+    * 長時間にわたって延長する時は手動でGC.startを実行してください
 
 ```ruby
 BlueGreenProcess.configure do |config|
