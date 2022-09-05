@@ -7,18 +7,19 @@ sequenceDiagram
   autonumber
   loop
   Master->>+Blue: be active
-  Blue-->>-Master: response
+  Blue->>-Master: response
   Master->>+Blue: work
-  Blue-->>-Master: response
+  Blue->>-Master: response
   Master->>+Blue: be inactive
-  Blue-->>-Master: response
+  Blue->>-Master: response
   Blue-->>Blue: GC.start
   Master->>+Green: be active
-  Green-->>-Master: response
+  Green->>-Master: response
   Master->>+Green: work
-  Green-->>-Master: response
+  Green->>-Master: response
   Master->>+Green: be inactive
-  Green-->>Green: GC.start
+  Green->>-Master: response
+  Green->>Green: GC.start
 end
  
 ```
