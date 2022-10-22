@@ -58,7 +58,7 @@ module BlueGreenProcess
             BlueGreenProcess.logger.debug "[BLUE_GREEN_PROCESS] #{label} has become inactive(#{$PROCESS_ID})"
             child_write.puts({ c: BlueGreenProcess::RESPONSE_OK,
                                data: BlueGreenProcess::SharedVariable.data }.to_json)
-            ::GC.start unless BlueGreenProcess::SharedVariable.extend_run_on_this_process
+            ::GC.start(full_mark: false) unless BlueGreenProcess::SharedVariable.extend_run_on_this_process
           when BlueGreenProcess::PROCESS_COMMAND_WORK
             if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
               warn "Should not be able to run in this status"
