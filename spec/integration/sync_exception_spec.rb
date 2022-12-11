@@ -5,7 +5,7 @@ RSpec.describe "BlueGreenProcess integration sync exception" do
     Process.waitall
   end
 
-  context "thorw RuntimeError" do
+  context "throw RuntimeError" do
     let(:worker_class) do
       Class.new(BlueGreenProcess::BaseWorker) do
         def work(label)

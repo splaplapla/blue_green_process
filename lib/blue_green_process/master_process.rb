@@ -24,10 +24,18 @@ module BlueGreenProcess
       @max_work = max_work
     end
 
+    # @return [Array<Integer>]
+    # 削除予定
     def pids
       @processes.map(&:pid)
     end
 
+    # @return [Array<Integer>]
+    def worker_pids
+      @processes.map(&:pid)
+    end
+
+    # @return [BlueGreenProcess::WorkerProcess]
     def fork_process(label:, worker_instance:)
       child_read, parent_write = IO.pipe
       parent_read, child_write = IO.pipe
@@ -39,10 +47,12 @@ module BlueGreenProcess
         parent_write.close
         parent_read.close
         process_status = :inactive
+        handle_signal(pipes: [child_read, child_write])
 
         loop do
-          data = child_read.gets&.strip
-          json = JSON.parse(data)
+          next unless (data = child_read.gets)
+
+          json = JSON.parse(data.strip)
           command = json["c"]
           case command
           when BlueGreenProcess::PROCESS_COMMAND_DIE, nil, ""
@@ -76,6 +86,8 @@ module BlueGreenProcess
             puts "unknown. from #{label}(#{$PROCESS_ID})"
             exit 1
           end
+        rescue IOError # NOTE: シグナル経由でpipeが破棄された時にこれが発生する
+          exit 127
         end
 
         exit 0
@@ -87,6 +99,7 @@ module BlueGreenProcess
       BlueGreenProcess::WorkerProcess.new(pid, label, parent_read, parent_write)
     end
 
+    # @return [void]
     def work
       active_process do |process|
         @max_work.times do
@@ -99,6 +112,7 @@ module BlueGreenProcess
       raise eval(e.error_class), e.message
     end
 
+    # @return [void]
     def shutdown
       @processes.each(&:shutdown)
       Process.waitall
@@ -106,6 +120,7 @@ module BlueGreenProcess
 
     private
 
+    # @return [void]
     def active_process
       active_process = nil
       @stage[!@stage_state].be_inactive
@@ -125,6 +140,33 @@ module BlueGreenProcess
       end
 
       true
+    end
+
+    # @return [void]
+    # シグナルを受け取ってpipeをcloseする
+    def handle_signal(pipes:)
+      Thread.new do
+        self_read, self_write = IO.pipe
+        %w[INT TERM].each do |sig|
+          trap sig do
+            self_write.puts(sig)
+          end
+        rescue ArgumentError
+          warn("Signal #{sig} not supported")
+        end
+
+        begin
+          while (readable_io = IO.select([self_read]))
+            signal = readable_io.first[0].gets.strip
+            case signal
+            when "INT", "TERM"
+              raise Interrupt
+            end
+          end
+        rescue Interrupt
+          pipes.each(&:close)
+        end
+      end
     end
   end
 end

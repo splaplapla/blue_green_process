@@ -13,6 +13,8 @@ require "json"
 require "singleton"
 
 module BlueGreenProcess
+  PID_PATH = "/tmp/pbm_blue_green_process_pids_path"
+
   PROCESS_STATUS_ACTIVE = :active
   PROCESS_STATUS_INACTIVE = :inactive
 
@@ -25,7 +27,9 @@ module BlueGreenProcess
   RESPONSE_ERROR = "ERR"
 
   def self.new(worker_instance:, max_work:)
-    BlueGreenProcess::MasterProcess.new(worker_instance: worker_instance, max_work: max_work)
+    master_process = BlueGreenProcess::MasterProcess.new(worker_instance: worker_instance, max_work: max_work)
+    File.write(PID_PATH, master_process.worker_pids.join(","))
+    master_process
   end
 
   def self.configure

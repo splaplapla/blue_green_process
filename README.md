@@ -171,6 +171,3 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## TODO
 * shutdownしないでプロセスを停止したときにSIGINTを受け取りたい
-* runしている間にsignalをもらったらすぐにdieを送りたい
-* inactiveからactiveへの切り替えになる時間を測定したい
-  * GCが長引いてactiveプロセスが処理開始に時間がかかるので

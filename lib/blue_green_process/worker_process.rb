@@ -47,7 +47,9 @@ module BlueGreenProcess
     end
 
     def wait_response
-      response = JSON.parse(read)
+      return unless (text = read)
+
+      response = JSON.parse(text.strip)
       BlueGreenProcess::SharedVariable.instance.restore(response["data"])
       case response["c"]
       when BlueGreenProcess::RESPONSE_OK
@@ -60,11 +62,15 @@ module BlueGreenProcess
     end
 
     def read
-      rpipe.gets.strip
+      rpipe.gets
+    rescue IOError
+      # NOTE: シグナル経由でpipeが破棄された時にこれが発生する
     end
 
     def write(token, args = {})
       wpipe.puts({ c: token }.merge!(args).to_json)
+    rescue Errno::EPIPE
+      # NOTE: シグナル経由でpipeが破棄された時にこれが発生する
     end
 
     def enforce_to_be_active
