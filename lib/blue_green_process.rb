@@ -13,7 +13,7 @@ require "json"
 require "singleton"
 
 module BlueGreenProcess
-  PID_PATH = "/tmp/pbm_blue_green_process_pids_path"
+  PID_PATH = "/tmp/pbm_blue_green_process_pids"
 
   PROCESS_STATUS_ACTIVE = :active
   PROCESS_STATUS_INACTIVE = :inactive
@@ -53,5 +53,22 @@ module BlueGreenProcess
   def self.reset
     @config = Config.new
     @performance = Performance.new
+  end
+
+  # @return [void]
+  def self.terminate_workers_immediately
+    worker_pids = nil
+    begin
+      worker_pids = File.read(PID_PATH).split(",").map(&:to_i)
+    rescue Errno::ENOENT
+      warn("#{PID_PATH}にファイルがありませんでした")
+      return
+    end
+
+    worker_pids.each do |worker_pid|
+      Process.kill "TERM", worker_pid
+    rescue Errno::ESRCH => e
+      warn("BlueGreenProcess workerプロセス(#{worker_pid})の終了に失敗しました。", e.message)
+    end
   end
 end

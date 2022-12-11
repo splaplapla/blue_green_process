@@ -54,6 +54,7 @@ end
 sleep(1)
 
 process.shutdown
+# or BlueGreenProcess.terminate_workers_immediately
 Process.waitall
 ```
 
