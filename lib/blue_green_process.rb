@@ -57,6 +57,8 @@ module BlueGreenProcess
 
   # @return [void]
   def self.terminate_workers_immediately
+    DRb.stop_service if defined?(DRb)
+
     worker_pids = nil
     begin
       worker_pids = File.read(PID_PATH).split(",").map(&:to_i)
