@@ -70,7 +70,7 @@ module BlueGreenProcess
     worker_pids.each do |worker_pid|
       Process.kill "TERM", worker_pid
     rescue Errno::ESRCH => e
-      warn("BlueGreenProcess workerプロセス(#{worker_pid})の終了に失敗しました。", e.message)
+      BlueGreenProcess.logger.warn("BlueGreenProcess workerプロセス(#{worker_pid})の終了に失敗しました。", e.message)
     end
   end
 end
