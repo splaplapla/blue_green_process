@@ -57,7 +57,6 @@ module BlueGreenProcess
 
   # @return [void]
   def self.terminate_workers_immediately
-    DRb.stop_service if defined?(DRb)
     BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$$}] TERMシグナルを送信します"
 
     worker_pids = nil
