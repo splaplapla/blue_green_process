@@ -73,6 +73,11 @@ module BlueGreenProcess
       BlueGreenProcess.logger.warn("[BLUE_GREEN_PROCESS][#{$$}] workerプロセス(#{worker_pid})の終了に失敗しました。#{e.message}")
     end
 
+    begin
+      Process.wait
+    rescue Errno::ECHILD => e
+      BlueGreenProcess.logger.warn("[BLUE_GREEN_PROCESS][#{$$}] Process.wait(#{e.message})に失敗しました")
+    end
     BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$$}] TERMシグナルを送信しました"
   end
 end
