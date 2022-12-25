@@ -159,8 +159,10 @@ module BlueGreenProcess
           while (readable_io = IO.select([self_read]))
             signal = readable_io.first[0].gets.strip
             case signal
-            when "INT", "TERM"
+            when "TERM"
               raise Interrupt
+            when "INT"
+              BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$$}] INTシグナルは無視します"
             end
           end
         rescue Interrupt
