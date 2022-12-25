@@ -107,9 +107,7 @@ RSpec.describe "BlueGreenProcess integration extend run on single_process" do
       Class.new(BlueGreenProcess::BaseWorker) do
         def work(label)
           BlueGreenProcess::SharedVariable.data["count"] += 1
-          if BlueGreenProcess::SharedVariable.data["count"] == 6
-            BlueGreenProcess::SharedVariable.extend_run_on_this_process = true
-          end
+          BlueGreenProcess::SharedVariable.extend_run_on_this_process = true if BlueGreenProcess::SharedVariable.data["count"] == 6
           BlueGreenProcess::SharedVariable.data["count_display"] =
             "#{label}:#{BlueGreenProcess::SharedVariable.data["count"]}"
         end

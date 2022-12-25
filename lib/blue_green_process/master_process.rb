@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "English"
 module BlueGreenProcess
   class ErrorWrapper < StandardError
     attr_accessor :error_class, :message
@@ -70,9 +71,7 @@ module BlueGreenProcess
                                data: BlueGreenProcess::SharedVariable.data }.to_json)
             ::GC.start unless BlueGreenProcess::SharedVariable.extend_run_on_this_process
           when BlueGreenProcess::PROCESS_COMMAND_WORK
-            if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
-              warn "Should not be able to run in this status"
-            end
+            warn "Should not be able to run in this status" if process_status == BlueGreenProcess::PROCESS_STATUS_INACTIVE
 
             begin
               worker_instance.work(*label)
@@ -162,7 +161,7 @@ module BlueGreenProcess
             when "TERM"
               raise Interrupt
             when "INT"
-              BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$$}] INTシグナルは無視します"
+              BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] INTシグナルは無視します"
             end
           end
         rescue Interrupt
