@@ -40,3 +40,6 @@ Metrics/ClassLength:
 
 Lint/AmbiguousBlockAssociation:
   Enabled: false
+
+Layout/LineLength:
+  Enabled: false

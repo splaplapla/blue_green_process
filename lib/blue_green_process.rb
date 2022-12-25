@@ -57,8 +57,7 @@ module BlueGreenProcess
 
   # @return [void]
   def self.terminate_workers_immediately
-    DRb.stop_service if defined?(DRb)
-    BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$$}] シグナルを送信します"
+    BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] TERMシグナルを送信します"
 
     worker_pids = nil
     begin
@@ -71,10 +70,14 @@ module BlueGreenProcess
     worker_pids.each do |worker_pid|
       Process.kill "TERM", worker_pid
     rescue Errno::ESRCH => e
-      BlueGreenProcess.logger.warn("BlueGreenProcess workerプロセス(#{worker_pid})の終了に失敗しました。")
-      BlueGreenProcess.logger.warn(e.message)
+      BlueGreenProcess.logger.warn("[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] workerプロセス(#{worker_pid})の終了に失敗しました。#{e.message}")
     end
 
-    BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$$}] シグナルを送信しました"
+    begin
+      Process.wait
+    rescue Errno::ECHILD => e
+      BlueGreenProcess.logger.warn("[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] Process.wait(#{e.message})に失敗しました")
+    end
+    BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] TERMシグナルを送信しました"
   end
 end
