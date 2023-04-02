@@ -49,7 +49,7 @@ module BlueGreenProcess
     def wait_response
       return unless (text = read)
 
-      response = JSON.parse(text.strip)
+      response = JSON.parse(text.strip.scrub)
       BlueGreenProcess::SharedVariable.instance.restore(response["data"])
       case response["c"]
       when BlueGreenProcess::RESPONSE_OK
