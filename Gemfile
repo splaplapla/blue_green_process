@@ -8,4 +8,4 @@ gemspec
 gem "pry"
 gem "rake"
 gem "rspec"
-gem "rubocop", "~> 1.21"
+gem "rubocop"
