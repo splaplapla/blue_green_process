@@ -2,29 +2,6 @@
 
 A library that solves GC bottlenecks with multi-process.
 
-```mermaid
-sequenceDiagram
-  autonumber
-  loop
-  Master->>+Blue: be active
-  Blue->>-Master: response
-  Master->>+Blue: work
-  Blue->>-Master: response
-  Master->>+Blue: be inactive
-  Blue->>-Master: response
-  Blue-->>Blue: GC.start
-  Master->>+Green: be active
-  Green->>-Master: response
-  Master->>+Green: work
-  Green->>-Master: response
-  Master->>+Green: be inactive
-  Green->>-Master: response
-  Green->>Green: GC.start
-end
- 
-```
-
-
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
