@@ -1,3 +1,6 @@
+## [0.1.4.3] - 2024-1-8
+- 処理を停止するときにpidを書いたファイルを削除するようになりました
+
 ## [0.1.4.2] - 2022-12-25
 * プロセス終了時にDRb.stop_serviceを呼ぶのをやめました
 
@@ -5,7 +8,7 @@
 * プロセス終了時にDRb.stop_serviceを呼ぶようにしました
 
 ## [0.1.4] - 2022-12-12
-* BlueGreenProcess.terminate_workers_immediately を呼び出すことで、シグナル経由で終了できるようになりました
+* BlueGreenProcess.terminate_workers_immediately を呼び出すことで、masterプロセスからシグナル経由でworkerプロセスを終了できるようになりました
 
 ## [0.1.3] - 2022-9-5
 * 単一プロセスでの実行を延長するとGC.startを実行しなくなりました
