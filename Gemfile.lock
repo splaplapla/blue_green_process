@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    blue_green_process (0.1.4.2)
+    blue_green_process (0.1.4.3)
 
 GEM
   remote: https://rubygems.org/
@@ -60,6 +60,3 @@ DEPENDENCIES
   rake
   rspec
   rubocop
-
-BUNDLED WITH
-   2.3.15
