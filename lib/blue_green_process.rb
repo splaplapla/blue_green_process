@@ -75,5 +75,7 @@ module BlueGreenProcess
     BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] workerプロセスへTERMシグナルを送信しました"
     Process.waitall
     BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] workerプロセスが終了しました"
+  ensure
+    FileUtils.rm_rf(BlueGreenProcess::PID_PATH)
   end
 end

@@ -43,4 +43,23 @@ RSpec.describe BlueGreenProcess do
       described_class.config.after_fork.call
     end
   end
+
+  describe ".terminate_workers_immediately" do
+    let(:worker_instance) { worker_class.new }
+    let(:worker_class) do
+      Class.new(BlueGreenProcess::BaseWorker) do
+        def work(label)
+          puts "work #{label}"
+        end
+      end
+    end
+
+    it 'workerプロセスを終了すること' do
+      process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 3)
+      process.work
+      BlueGreenProcess.terminate_workers_immediately
+      expect(Process.waitall).to eq([])
+      expect(File.exist?(BlueGreenProcess::PID_PATH)).to eq(false)
+    end
+  end
 end
