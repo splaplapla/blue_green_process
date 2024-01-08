@@ -54,7 +54,7 @@ RSpec.describe BlueGreenProcess do
       end
     end
 
-    it 'workerプロセスを終了すること' do
+    it "workerプロセスを終了すること" do
       process = BlueGreenProcess.new(worker_instance: worker_instance, max_work: 3)
       process.work
       BlueGreenProcess.terminate_workers_immediately
