@@ -56,6 +56,7 @@ RSpec.describe "BlueGreenProcess integration after_fork" do
            "green" * 2,
            "blue"  * 2].join
         )
+        expect(File.exist?(BlueGreenProcess::PID_PATH)).to eq(false)
       end
     end
   end

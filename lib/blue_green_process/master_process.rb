@@ -115,6 +115,9 @@ module BlueGreenProcess
     def shutdown
       @processes.each(&:shutdown)
       Process.waitall
+    ensure
+      # 正常終了だとworkerから削除するケースはないんだけど、想定外のエラーが起きた時を考慮してworkerから削除する
+      FileUtils.rm_rf(BlueGreenProcess::PID_PATH)
     end
 
     private

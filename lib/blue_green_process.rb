@@ -63,7 +63,7 @@ module BlueGreenProcess
     begin
       worker_pids = File.read(PID_PATH).split(",").map(&:to_i)
     rescue Errno::ENOENT
-      warn("#{PID_PATH}にファイルがありませんでした")
+      BlueGreenProcess.logger.warn("[BLUE_GREEN_PROCESS] #{PID_PATH}にファイルがありませんでした")
       return
     end
 
@@ -72,12 +72,10 @@ module BlueGreenProcess
     rescue Errno::ESRCH => e
       BlueGreenProcess.logger.warn("[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] workerプロセス(#{worker_pid})の終了に失敗しました。#{e.message}")
     end
-
-    begin
-      Process.wait
-    rescue Errno::ECHILD => e
-      BlueGreenProcess.logger.warn("[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] Process.wait(#{e.message})に失敗しました")
-    end
-    BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] TERMシグナルを送信しました"
+    BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] workerプロセスへTERMシグナルを送信しました"
+    Process.waitall
+    BlueGreenProcess.logger.warn "[BLUE_GREEN_PROCESS][#{$PROCESS_ID}] workerプロセスが終了しました"
+  ensure
+    FileUtils.rm_rf(BlueGreenProcess::PID_PATH)
   end
 end
